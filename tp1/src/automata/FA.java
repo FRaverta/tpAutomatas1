@@ -171,7 +171,8 @@ public abstract class FA {
                     landa=true;
                 }
                 for(Triple<State,Character,State> l: transitions){
-                    if (( t.first().equals(l.first()) || t.third().equals(l.third()) ) && t.second()==l.second()){
+                    //Is non deterministic if have more 1 transition from Qi to any node within the same label
+                    if ( t.first().equals(l.first()) && !t.third().equals(l.third())  && t.second()==l.second()){ 
                         nonDeterministic=true;
                     }
                 }    
