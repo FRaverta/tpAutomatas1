@@ -75,4 +75,8 @@ public class Triple<A, B, C> {
         }
         return true;
     }
+    
+    public String toString(){
+        return "("+ _first.toString() + "," + _second.toString() + ","+ _third.toString() +")";
+    }
 }

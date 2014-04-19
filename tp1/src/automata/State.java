@@ -11,6 +11,15 @@ public class State {
     public String name() {
         return _name;
     }
+    
+    public boolean equals(State obj){
+        return obj._name.equals(obj._name);
+    }
+    
+    public String toString(){
+        return _name;
+    }
+    
     // Optional - Use to get equality based in abtributes, 
     // instead than by reference (which is Java's default). 
     /*
@@ -38,5 +47,5 @@ public class State {
      return false;
      return true;
      }
-     */
+    */
 }
