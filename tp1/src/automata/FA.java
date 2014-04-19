@@ -36,10 +36,13 @@ public abstract class FA {
         Scanner input = null;
         File f;
         Pair<String> p;
-        State ini,aux1,aux2;
-        Triple<State,State,String> transition;
+        State ini=null;
+        State aux1,aux2;
+        Triple<State,Character,State> transition;
         Set<State> Q= new HashSet();
-        Set<Triple> delta= new HashSet();
+        Set<Triple<State,Character,State>> delta= new HashSet();
+        Set<Character> alphabet= new HashSet();
+        Set<State> finalStates=new HashSet();
         try {
             f = new File(path);
             input=new Scanner(f);
@@ -51,18 +54,42 @@ public abstract class FA {
                     if (p.getFrst().equals("inic")){
                      ini= new State(p.getScond());
                      Q.add(ini);
+                     //System.out.println("Initial State: " + ini.toString());
                     }else{
-                        aux1=new State(p.getFrst());
-                        aux2= new State(p.getScond());
-                        Q.add(aux1);
-                        Q.add(aux2);
-                        transition= new Triple(getElemFromSet(Q,aux1), getElemFromSet(Q,aux2),getLabel(line));
-                        System.out.println("Transition: "+ transition.toString());
-                        delta.add(transition);
-                    }
-                 }else{   
-                        System.out.println(line); //erase 
-                      }   
+                            aux1=new State(p.getFrst());
+                            aux2= new State(p.getScond());     
+                            if (getElemFromSet(Q,aux1)==null){                       
+                                Q.add(aux1);
+                            }    
+                            if (getElemFromSet(Q,aux2)==null){                       
+                                Q.add(aux2);
+                            }  
+                            for (char letter:getLabel(line).toCharArray()){
+                                if (letter!=','){
+                                    transition= new Triple(getElemFromSet(Q,aux1),letter,getElemFromSet(Q,aux2));
+                                    //System.out.println("Transition: "+ transition.toString());
+                                    delta.add(transition); //Add transition to AF delta function
+                                    alphabet.add(letter); //add letter to AF alphabet
+                                }
+                            }
+                        }    
+                 }else{if (line.contains("[shape=doublecircle]"))
+                        {
+                            line= line.trim();
+                            aux1= new State(line.substring(0,line.indexOf("[shape=doublecircle]")));
+                            if (getElemFromSet(Q,aux1)!=null){
+                                finalStates.add((State)getElemFromSet(Q,aux1));
+                                //System.out.println("Final State: "+ getElemFromSet(Q,aux1).toString() );
+                            }else{
+                                    Q.add(aux1);                                    
+                                    finalStates.add(aux1);
+                                    //System.out.println("--Final State: "+ getElemFromSet(Q,aux1).toString() );
+
+                                 }    
+                        }else{
+                              //System.out.println(line); //erase 
+                              }
+                 }
              } 
         }catch(FileNotFoundException e){
              System.out.println(e.getMessage());
@@ -71,12 +98,18 @@ public abstract class FA {
                 input.close();
             }
         }
+        System.out.println("States: "+ Q.toString());
+        System.out.println("Delta: "+ delta.toString());
+        System.out.println("InitialState: "+ ini.toString());
+        System.out.println("Final Statates: "+ finalStates.toString()); 
+        System.out.println("Alphabet: "+ alphabet.toString());
+        automaton= builFA(Q,alphabet,delta,ini,finalStates) ;
         return automaton;
     }
     
     private static void workWithLine(String line){
         /*if (line.equals("digraph {") || line.equals("digraph{")){
-            System.out.println("IS EQUAL");
+            System.out.println("IS EQUAL");            if 
         }*/
     }
 
@@ -102,22 +135,59 @@ public abstract class FA {
     private static String getLabel(String l){
         int beginIndex=l.indexOf("[label=");
         int endIndex=l.lastIndexOf("]");
-        return l.substring(beginIndex+7, endIndex);
+        return l.substring(beginIndex+8, endIndex-1); //Not take char ' " '
     }
     
  //Method that take a set and object and return a reference to object o from q if o in q or return null.   
-    private static Object getElemFromSet(Set q, Object o){
+    private static State getElemFromSet(Set<State> q,State o){
+        //System.out.println("Set: "+ q.toString() + " State: "+ o.toString());
         Iterator i=q.iterator();
-        Object aux;
+        State aux;
+        State result=null;
         while (i.hasNext()){
-            aux= i.next();
+            aux=(State) i.next();
+            //System.out.println("Object in set: "+ aux.toString());
             if (aux.equals(o)){
-                return aux;
+                //System.out.println("-- "  +aux.toString() +" is equal to "+ o.toString());
+                result=o;
+               
             }
         }
-        return null;
+        return result;
     }
 
+ private static FA builFA(
+        Set<State> states,
+        Set<Character> alphabet,
+        Set<Triple<State, Character, State>> transitions,
+        State initial,
+        Set<State> final_states
+        )throws IllegalArgumentException    
+        {
+            boolean landa=false;
+            boolean nonDeterministic= false;
+            for(Triple<State,Character,State> t: transitions){
+                if (t.second()=='_'){
+                    landa=true;
+                }
+                for(Triple<State,Character,State> l: transitions){
+                    if (( t.first().equals(l.first()) || t.third().equals(l.third()) ) && t.second()==l.second()){
+                        nonDeterministic=true;
+                    }
+                }    
+            }
+            if (!landa && !nonDeterministic){
+                return new DFA(states,alphabet,transitions,initial,final_states);
+            }else{
+                  if(!landa){
+                      return new NFA(states,alphabet,transitions,initial,final_states);
+                  }else{
+                            return new NFALambda(states,alphabet,transitions,initial,final_states);
+                        }
+            }
+        }
+         
+         
     /*
      * 	State Querying
      */

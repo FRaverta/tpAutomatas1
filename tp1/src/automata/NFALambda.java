@@ -18,6 +18,8 @@ public class NFALambda extends FA {
             Set<State> final_states)
             throws IllegalArgumentException {
         // TODO
+                System.out.println("Is a NFALambda");
+
     }
 
     /*
