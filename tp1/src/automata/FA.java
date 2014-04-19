@@ -105,6 +105,7 @@ public abstract class FA {
         return l.substring(beginIndex+7, endIndex);
     }
     
+ //Method that take a set and object and return a reference to object o from q if o in q or return null.   
     private static Object getElemFromSet(Set q, Object o){
         Iterator i=q.iterator();
         Object aux;
