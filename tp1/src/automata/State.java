@@ -13,7 +13,6 @@ public class State {
     }
     
     public boolean equals(State obj){
-        System.out.println("Consulte Equals");
         return _name.equals(obj._name);
     }
     
