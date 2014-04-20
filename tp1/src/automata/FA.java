@@ -81,14 +81,13 @@ public abstract class FA {
                         {
                             line= line.trim();
                             aux1= new State(line.substring(0,line.indexOf("[shape=doublecircle]")));
-                            if (getElemFromSet(Q,aux1)!=null){
-                                finalStates.add((State)getElemFromSet(Q,aux1));
-                                //System.out.println("Final State: "+ getElemFromSet(Q,aux1).toString() );
+                            aux2=getElemFromSet(Q,aux1);
+                            if (aux2 != null){
+                                finalStates.add(aux2);
                             }else{
                                     Q.add(aux1);                                    
                                     finalStates.add(aux1);
                                     //System.out.println("--Final State: "+ getElemFromSet(Q,aux1).toString() );
-
                                  }    
                         }else{
                               //System.out.println(line); //erase 
@@ -148,13 +147,12 @@ public abstract class FA {
             //System.out.println("Object in set: "+ aux.toString());
             if (aux.equals(o)){
                 //System.out.println("-- "  +aux.toString() +" is equal to "+ o.toString());
-                result=o;
-               
+                result=o;          
             }
         }
         return result;
     }
-
+ 
 //Method that build a concrete FA(DFA.NFA,NFALambda) depending if the parameters.      
  private static FA builFA(
         Set<State> states,

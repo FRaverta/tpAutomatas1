@@ -11,14 +11,23 @@ public class State {
     public String name() {
         return _name;
     }
-    
+   /* 
     public boolean equals(State obj){
         return _name.equals(obj._name);
+    }*/
+    
+    public boolean equals(Object obj) {
+        if (!(obj instanceof State))
+            return false;	
+	if (obj == this)
+            return true;
+	return this._name.equals(((State) obj)._name);
     }
     
     public String toString(){
         return _name;
     }
+
     
     // Optional - Use to get equality based in abtributes, 
     // instead than by reference (which is Java's default). 
@@ -30,7 +39,11 @@ public class State {
      result = prime * result + ((_name == null) ? 0 : _name.hashCode());
      return result;
      }
-
+*/
+    	public int hashCode(){
+		return _name.hashCode();// return a hashCode each character- if not define we have problems with HashSet.contains
+	}
+  /*
      @Override
      public boolean equals(Object obj) {
      if (this == obj)

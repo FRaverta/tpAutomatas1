@@ -25,6 +25,9 @@ public class DFA extends FA {
         _transitions=transitions;
         _initial=initial;
         _final_states= final_states;
+        if (!rep_ok()){
+            throw new  IllegalArgumentException();
+        }
         System.out.println("Is a DFA");
     }
 
@@ -176,10 +179,33 @@ public class DFA extends FA {
 
     @Override
     public boolean rep_ok() {
-        // TODO: Check that the alphabet does not contains lambda.
-        // TODO: Check that initial and final states are included in 'states'.
-        // TODO: Check that all transitions are correct. All states and characters should be part of the automaton set of states and alphabet.
-        // TODO: Check that the transition relation is deterministic.
-        return true;
+        boolean containLambda= false;
+        boolean statesOK=true;
+        boolean transitionOK= true;
+        boolean nonDeterministic= false;
+        //Check that the alphabet does not contains lambda.
+        for(Character c: _alphabet){
+            if (c== Lambda){
+                containLambda=true;
+                System.out.println("ContainLambda");
+            }                                      
+        }
+        //Check that final states are included in 'states'.
+        for(State s:_final_states){
+            statesOK= _states.contains(s) && statesOK;
+        }
+        //Check that all transitions are correct. All states and characters should be part of the automaton set of states and alphabet.
+        for(Triple<State,Character,State> t:_transitions){
+            transitionOK= _states.contains(t.first()) && _states.contains(t.third()) && _alphabet.contains(t.second()) && transitionOK;
+            //Check that the transition relation is deterministic.
+            for(Triple<State,Character,State> l: _transitions){       
+                //Is non deterministic if have more 1 transition from Qi to any node within the same label
+                if ( t.first().equals(l.first()) && !t.third().equals(l.third())  && t.second()==l.second()){ 
+                    nonDeterministic=true;
+                }
+            }
+        }
+        //Check that the transition relation is deterministic.
+        return _states.contains(_initial) && !containLambda && !nonDeterministic && transitionOK && statesOK;
     }
 }

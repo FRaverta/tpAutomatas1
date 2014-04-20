@@ -23,6 +23,9 @@ public class NFA extends FA {
         _transitions=transitions;
         _initial=initial;
         _final_states= final_states;
+        if (!rep_ok()){
+            throw new  IllegalArgumentException();
+        }
         System.out.println("Is a NFA");
 
     }
@@ -94,9 +97,24 @@ public class NFA extends FA {
 
     @Override
     public boolean rep_ok() {
-        // TODO: Check that the alphabet does not contains lambda.
-        // TODO: Check that initial and final states are included in 'states'.
-        // TODO: Check that all transitions are correct. All states and characters should be part of the automaton set of states and alphabet.
-        return true;
+        boolean containLambda= false;
+        boolean statesOK=true;
+        boolean transitionOK= true;
+        //Check that the alphabet does not contains lambda.
+        for(Character c: _alphabet){
+            if (c== Lambda){
+                containLambda=true;
+            }                                      
+        }
+        //Check that final states are included in 'states'.
+        for(State s:_final_states){
+            statesOK= _states.contains(s) && statesOK;
+        }
+        //Check that all transitions are correct. All states and characters should be part of the automaton set of states and alphabet.
+        for(Triple<State,Character,State> t:_transitions){
+            transitionOK= _states.contains(t.first()) && _states.contains(t.third()) && _alphabet.contains(t.second()) && transitionOK;
+        }    
+        return _states.contains(_initial) && !containLambda && transitionOK && statesOK;
     }
 }
+        
