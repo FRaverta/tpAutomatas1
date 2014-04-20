@@ -14,7 +14,11 @@ public abstract class FA {
     public static final Character Lambda = '_';
 
 //Automaton atributes    
-    public State _ini;
+    protected State _initial;
+    protected Set<State> _states;
+    protected Set<Character> _alphabet;
+    protected Set<Triple<State,Character,State>> _transitions; //delta function
+    protected Set<State> _final_states;
     
     /* Creation */
     /**
@@ -107,11 +111,6 @@ public abstract class FA {
         return automaton;
     }
     
-    private static void workWithLine(String line){
-        /*if (line.equals("digraph {") || line.equals("digraph{")){
-            System.out.println("IS EQUAL");            if 
-        }*/
-    }
 
 //Method for String that contain the following structure: "_ A->B _" so return a pair with (A,B) 
 // PostCondition: (A,B) if String has pattern: A->B or ("","") if it hasn't.    
@@ -156,6 +155,7 @@ public abstract class FA {
         return result;
     }
 
+//Method that build a concrete FA(DFA.NFA,NFALambda) depending if the parameters.      
  private static FA builFA(
         Set<State> states,
         Set<Character> alphabet,
@@ -244,9 +244,14 @@ public abstract class FA {
      *
      * @return True iff the string consists only of characters in the alphabet.
      */
-    public boolean verify_string(String s) {
-        // TODO
-        return false;
+    public boolean verify_string(String s){
+        boolean ok=true;
+        for(Character c: s.toCharArray()){
+            if (!_alphabet.contains(c)){
+                ok=false;
+            }
+        }
+        return ok;
     }
 
     /**

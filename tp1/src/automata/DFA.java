@@ -18,8 +18,13 @@ public class DFA extends FA {
             Set<Triple<State, Character, State>> transitions,
             State initial,
             Set<State> final_states)
-            throws IllegalArgumentException {
-        // TODO
+            throws IllegalArgumentException 
+    {
+        _states= states;
+        _alphabet=alphabet;
+        _transitions=transitions;
+        _initial=initial;
+        _final_states= final_states;
         System.out.println("Is a DFA");
     }
 
