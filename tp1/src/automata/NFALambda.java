@@ -67,7 +67,8 @@ public class NFALambda extends FA {
     @Override
     public String to_dot() {
         assert rep_ok();
-        // TODO
+        String aux;
+        aux = "NFALambda: "+this._transitions.iterator().toString();
         return null;
     }
 

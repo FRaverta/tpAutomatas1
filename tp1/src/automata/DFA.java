@@ -69,7 +69,8 @@ public class DFA extends FA {
     @Override
     public String to_dot() {
         assert rep_ok();
-        // TODO
+        String aux;
+        aux = "DFA: "+this._transitions.iterator().toString();
         return null;
     }
 
