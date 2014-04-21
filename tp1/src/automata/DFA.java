@@ -1,5 +1,6 @@
 package automata;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import utils.Triple;
@@ -62,9 +63,19 @@ public class DFA extends FA {
     public State delta(State from, Character c) {
         assert states().contains(from);
         assert alphabet().contains(c);
-        // TODO
-        return null;
-    }
+        Iterator i=_transitions.iterator();
+        Triple<State, Character, State> aux;
+        State result=null;
+        while (i.hasNext()){
+            aux=(Triple<State, Character, State>) i.next();
+       
+            if (c.equals(aux.second()) && aux.first().equals(from)) //PROBLEMA CON ; DE FROM
+                {
+                result=aux.third();      
+            }
+        }
+        return result;
+    }   
 
     @Override
     public String to_dot() {
@@ -85,7 +96,7 @@ public class DFA extends FA {
         return aux;
     }
 
-    /*
+  /*
      *  Automata methods
      */
     @Override
@@ -93,9 +104,26 @@ public class DFA extends FA {
         assert rep_ok();
         assert string != null;
         assert verify_string(string);
-        // TODO
-        return false;
+        State actual = _initial;
+        int lenght = string.length(); 
+	int index = 0;
+	while (lenght != 0){
+            
+            Character caracterActual = string.charAt(index);
+            
+            actual = delta(actual,caracterActual);
+            lenght--; 
+            index ++;
+           
+            
+            if (actual == null)
+                return false;
+        }
+        
+	return _final_states.contains(actual);
+        
     }
+
 
     /**
      * Converts the automaton to a NFA.
