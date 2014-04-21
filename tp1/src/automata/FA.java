@@ -108,7 +108,7 @@ public abstract class FA {
         System.out.println("Alphabet: "+ alphabet.toString());
         automaton= builFA(Q,alphabet,delta,ini,finalStates) ;
         System.out.println("Acepta la cadena: "+automaton.accepts("lenguajes"));
-        System.out.println("Fun Delta: "+automaton.delta(ini, 'y'));
+        System.out.println("Fun Delta: "+automaton.delta(ini, 'a'));
         return automaton;
     }
     

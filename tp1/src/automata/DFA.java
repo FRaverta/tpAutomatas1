@@ -68,7 +68,6 @@ public class DFA extends FA {
         State result=null;
         while (i.hasNext()){
             aux=(Triple<State, Character, State>) i.next();
-       
             if (c.equals(aux.second()) && aux.first().equals(from)) //PROBLEMA CON ; DE FROM
                 {
                 result=aux.third();      
@@ -107,21 +106,16 @@ public class DFA extends FA {
         State actual = _initial;
         int lenght = string.length(); 
 	int index = 0;
-	while (lenght != 0){
-            
-            Character caracterActual = string.charAt(index);
-            
+	while (lenght != 0){   
+            Character caracterActual = string.charAt(index);        
             actual = delta(actual,caracterActual);
             lenght--; 
-            index ++;
-           
-            
+            index ++;     
             if (actual == null)
                 return false;
         }
         
-	return _final_states.contains(actual);
-        
+	return _final_states.contains(actual);     
     }
 
 

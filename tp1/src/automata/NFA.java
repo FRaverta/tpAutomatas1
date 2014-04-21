@@ -1,5 +1,7 @@
 package automata;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import utils.Triple;
@@ -61,9 +63,21 @@ public class NFA extends FA {
     public Set<State> delta(State from, Character c) {
         assert states().contains(from);
         assert alphabet().contains(c);
-        // TODO
-        return null;
-    }
+        Iterator i=_transitions.iterator();
+        Triple<State, Character, State> aux;
+        Set<State> result=new HashSet();
+        while (i.hasNext()){
+            aux=(Triple<State, Character, State>) i.next();
+           
+            if (c.equals(aux.second()) && aux.first().equals(from)) //PROBLEMA CON ; DE FROM
+                {
+                result.add(aux.third()) ; 
+               
+            }
+        }
+        return result;
+    }   
+
 
     @Override
     public String to_dot() {
