@@ -27,6 +27,10 @@ public class State {
     public String toString(){
         return _name;
     }
+    
+    public void rename(String Newname){
+        _name= Newname;
+    }
 
     
     // Optional - Use to get equality based in abtributes, 

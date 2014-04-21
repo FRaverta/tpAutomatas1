@@ -38,26 +38,22 @@ public class DFA extends FA {
      */
     @Override
     public Set<State> states() {
-        // TODO
-        return null;
+        return _states;
     }
 
     @Override
     public Set<Character> alphabet() {
-        // TODO
-        return null;
+        return _alphabet;
     }
 
     @Override
     public State initial_state() {
-        // TODO
-        return null;
+        return _initial;
     }
 
     @Override
     public Set<State> final_states() {
-        // TODO
-        return null;
+        return _final_states;
     }
 
     @Override
@@ -80,16 +76,19 @@ public class DFA extends FA {
     @Override
     public String to_dot() {
         assert rep_ok();
+        Iterator i;
         String aux;
         aux = "digraph{\n";
-        aux = aux + "inic[shape=ponit];\n" + "inic->" + this._initial.name() + ";\n";
-        while (this._transitions.iterator().hasNext()) {
-           Triple triupla = this._transitions.iterator().next();
+        aux = aux + "inic[shape=point];\n" + "inic->" + this._initial.name() + ";\n";
+        i=this._transitions.iterator();
+        while (i.hasNext()) {
+           Triple triupla =(Triple) i.next();
            aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" + triupla.second().toString() + "];\n";
         }
-        aux = "\n";
-        while (this._final_states.iterator().hasNext()){
-            State estado = this._final_states.iterator().next();
+        aux = aux+ "\n";
+        i=this._final_states.iterator();
+        while (i.hasNext()){
+            State estado = (State) i.next();
             aux = aux + estado.name() + "[shape=doublecircle];\n";
         }
         aux = aux + "}";
@@ -200,11 +199,59 @@ public class DFA extends FA {
      *
      * @returns a new DFA accepting the union of both languages.
      */
+    //this=t and other=0
     public DFA union(DFA other) {
         assert rep_ok();
         assert other.rep_ok();
-        // TODO
-        return null;
+        FA union;
+        Set<State> states=new HashSet();
+        Set<State> final_states= new HashSet();
+        Set<Triple<State,Character,State>> transitions=new HashSet();
+        Set<Character> alphabet= new HashSet();
+        State initial= new State("Uq0");
+        states.add(initial);
+        states.addAll(this._states);
+        if (this._final_states.contains(this._initial) ||other._final_states.contains(other._initial)){
+            final_states.add(initial);
+        }
+        for(State s: other._states){
+            s.rename("B"+s.name()); //remember that JAVA has a passage of parameters by value
+            states.add(s);
+        }
+        final_states.addAll(this._final_states);
+        for(State s: other._final_states){
+            s.rename("B"+s.name()); //remember that JAVA has a passage of parameters by value
+            final_states.add(s);
+        }        
+        for(Triple<State,Character,State> t: this._transitions){
+            transitions.add(t);
+            if (t.first().equals(this._initial)){
+                transitions.add(new Triple(initial,t.second(),t.first()));
+            } 
+        }
+        for(Triple<State,Character,State> t: other._transitions){
+            if (!t.first().name().startsWith("B")){
+                t.first().rename("B"+t.first().name());
+            }
+            if (!t.third().name().startsWith("B")){
+                t.third().rename("B"+t.third().name());
+            }
+            transitions.add(t);
+            if (t.first().equals(other._initial)){
+                transitions.add(new Triple(initial,t.second(),t.first()));
+            } 
+        }
+        
+        alphabet.addAll(this._alphabet);
+        alphabet.addAll(other._alphabet);
+        try{
+            union= new DFA(states,alphabet,transitions,initial,final_states);
+        }catch(IllegalArgumentException e){
+            union= new NFA(states,alphabet,transitions,initial,final_states);
+            union= ((NFA) union).toDFA(); //OJO! PUEDE NO SER UN DFA DEBERIA VER 
+        }
+        
+        return (DFA) union;                
     }
 
     /**
