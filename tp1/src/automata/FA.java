@@ -105,10 +105,11 @@ public abstract class FA {
         System.out.println("Delta: "+ delta.toString());
         System.out.println("InitialState: "+ ini.toString());
         System.out.println("Final Statates: "+ finalStates.toString()); 
-        System.out.println("Alphabet: "+ alphabet.toString());
         automaton= builFA(Q,alphabet,delta,ini,finalStates) ;
         System.out.println("Acepta la cadena: "+automaton.accepts("a"));
         System.out.println("Fun Delta: "+automaton.delta(ini, 'a'));
+        DFA auto= new DFA(Q,alphabet,delta,ini,finalStates);
+        System.out.println("Complemento: " +auto.complement()._final_states.toString());
         return automaton;
     }
     

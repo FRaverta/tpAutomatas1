@@ -1,5 +1,6 @@
 package automata;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -169,9 +170,17 @@ public class DFA extends FA {
      * @returns a new DFA accepting the language's complement.
      */
     public DFA complement() {
-        assert rep_ok();
-        // TODO
-        return null;
+         assert rep_ok();
+        DFA complement = new DFA(_states,_alphabet,_transitions,_initial,new HashSet());
+        Iterator i=_states.iterator();
+        State aux;
+        while(i.hasNext()){
+            aux= (State) i.next();
+            if (!_final_states.contains(aux)){
+                complement._final_states.add(aux);
+            }
+        }
+        return complement;
     }
 
     /**
