@@ -69,8 +69,19 @@ public class NFA extends FA {
     public String to_dot() {
         assert rep_ok();
         String aux;
-        aux = "NFA: "+this._transitions.iterator().toString();
-        return null;
+        aux = "digraph{\n";
+        aux = aux + "inic[shape=ponit];\n" + "inic->" + this._initial.name() + ";\n";
+        while (this._transitions.iterator().hasNext()) {
+           Triple triupla = this._transitions.iterator().next();
+           aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" + triupla.second().toString() + "];\n";
+        }
+        aux = "\n";
+        while (this._final_states.iterator().hasNext()){
+            State estado = this._final_states.iterator().next();
+            aux = aux + estado.name() + "[shape=doublecircle];\n";
+        }
+        aux = aux + "}";
+        return aux;
     }
 
     /*
