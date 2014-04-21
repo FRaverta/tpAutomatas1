@@ -1,5 +1,6 @@
 package automata;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -68,11 +69,9 @@ public class NFA extends FA {
         Set<State> result=new HashSet();
         while (i.hasNext()){
             aux=(Triple<State, Character, State>) i.next();
-           
             if (c.equals(aux.second()) && aux.first().equals(from)) //PROBLEMA CON ; DE FROM
                 {
-                result.add(aux.third()) ; 
-               
+                result.add(aux.third()) ;     
             }
         }
         return result;
@@ -106,9 +105,29 @@ public class NFA extends FA {
         assert rep_ok();
         assert string != null;
         assert verify_string(string);
-        // TODO
-        return false;
+        return accepts2(_initial,string);
+        }
+            
+    public boolean accepts2 (State estado, String string){
+
+  
+    if (string.isEmpty())
+			return _final_states.contains(estado);
+         Set<State> siguientes = new HashSet();
+	siguientes= delta(estado,string.charAt(0));
+         boolean res = false;
+                        Iterator i= siguientes.iterator();
+                        State aux;
+                        while (i.hasNext()){
+                            aux= (State)i.next();
+                            res = res || accepts2(aux,string.substring(1));
+                        }
+			
+			return res;
+         
+	
     }
+    
 
     /**
      * Converts the automaton to a DFA.
