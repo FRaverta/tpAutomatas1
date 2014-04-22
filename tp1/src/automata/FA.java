@@ -251,6 +251,13 @@ public abstract class FA {
         return ok;
     }
 
+    public String toString(){
+        String aux= "States: " + _states.toString() + "\n" ; 
+        aux= aux +"Delta: "+ _transitions.toString()+"\n";
+        aux=aux + "InitialState: "+ _initial.toString()+ "\n" ;
+        aux=aux+ "Final Statates: "+ _final_states.toString()+ "\n";
+        return aux;
+    }
     /**
      * @return True iff the automaton is in a consistent state.
      */

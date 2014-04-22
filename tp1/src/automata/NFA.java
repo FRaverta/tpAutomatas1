@@ -129,7 +129,7 @@ public class NFA extends FA {
      *
      * @return DFA recognizing the same language.
      */
-    public DFA toDFA() {
+    public DFA toDFA(){
         assert rep_ok();
         Set<Set<State>> states= new HashSet();//set of reachable "set states" 
         Set<Triple<Set<State>,Character,Set<State>>> transitions= new HashSet();//Set of transitions between set of states
@@ -139,12 +139,16 @@ public class NFA extends FA {
         setInitial.add(_initial); // a set with a unique member
         states.add(setInitial);//the "initial set of states" is reachable
         int lastSize= 0; //variable for count the set size before start a loop
+        Set<State> newSet;
         for(Character c: this._alphabet){ //add all set of states reachable from initial node.
-            states.add(this.delta(_initial, c));
+            newSet=this.delta(_initial, c);
+            if (!newSet.isEmpty()){
+                states.add(newSet);            
+            }
         }
         //System.out.println("States "+states.toString());
         Set<Set<State>> auxSet= new HashSet(); //set auxiliar for don't modified the loop's variable states
-        Set<State> newSet= new HashSet();
+        newSet= new HashSet();
         while(lastSize!=states.size()){ //If the loop don't add a new set of states so we have all reachable states
             lastSize=states.size(); //update the size before start a new loop
             auxSet=new HashSet(); //refresh auxSet
@@ -154,11 +158,13 @@ public class NFA extends FA {
                     for(State sub: s){//calculate the reachable state for each caracter                   
                         newSet.addAll(delta(sub,c));
                     }
-                    auxSet.add(newSet); //add the reachable state from s by char c.
+                    if(!newSet.isEmpty()){
+                        auxSet.add(newSet); //add the reachable state from s by char c.
+                    }
                 }
             }            
             states.addAll(auxSet);//add the new reachable states
-            //System.out.println("States "+states.toString());
+            System.out.println("States "+states.toString());
 
         }
         State aux;
@@ -178,8 +184,10 @@ public class NFA extends FA {
                 for(State s: set){
                     goTo.addAll(delta(s,c)); //for each char, for each state I search the reachable states
                 }
-                t= new Triple(set,c,goTo); //make a transitions representations
-                transitions.add(t);
+                if (!goTo.isEmpty()){
+                    t= new Triple(set,c,goTo); //make a transitions representations
+                    transitions.add(t);
+                }    
             }
         }
         HashSet dTransitions= new HashSet();
@@ -207,7 +215,8 @@ public class NFA extends FA {
         System.out.println("Delta: "+ dTransitions.toString());
         System.out.println("InitialState: "+ dInitial.toString());
         System.out.println("Final Statates: "+ dFinalStates.toString());*/ 
-        return new DFA(dStates,_alphabet,dTransitions,dInitial,dFinalStates); //return a deterministic FA
+        DFA res= new DFA(dStates,_alphabet,dTransitions,dInitial,dFinalStates);
+        return res; //return a deterministic FA
     }
 
 //Method that take a Set<States> and return a string that contain all state's names concatenate     
