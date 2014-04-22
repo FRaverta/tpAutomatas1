@@ -1,5 +1,7 @@
 package automata;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -14,6 +16,8 @@ public class DFA extends FA {
      * 	Construction
      */
     // Constructor
+       
+    private   Object _nroStates[] ; //array used to give a number to each state
     public DFA(
             Set<State> states,
             Set<Character> alphabet,
@@ -27,12 +31,13 @@ public class DFA extends FA {
         _transitions=transitions;
         _initial=initial;
         _final_states= final_states;
+        _nroStates=  _states.toArray();
         if (!rep_ok()){
             throw new  IllegalArgumentException();
         }
         System.out.println("Is a DFA");
     }
-
+   
     /*
      *	State querying 
      */
@@ -114,10 +119,8 @@ public class DFA extends FA {
             if (actual == null)
                 return false;
         }
-        
-	return _final_states.contains(actual);     
+        return _final_states.contains(actual);       
     }
-
 
     /**
      * Converts the automaton to a NFA.
@@ -148,10 +151,70 @@ public class DFA extends FA {
      */
     public boolean is_empty() {
         assert rep_ok();
-        // TODO
+        int [][] matriz= this.clausuraTransitiva();
+        String nameInicial = _initial.name();
+        nameInicial = nameInicial.substring(1,nameInicial.length());
+        Iterator i= _final_states.iterator();
+        while (i.hasNext()){
+            State fin= (State)i.next();
+            String nameFinal= fin.name();
+            nameFinal = nameFinal.substring(1,nameFinal.length());
+            int numFin = Integer.parseInt(nameFinal);
+            if (matriz[0][numFin]==0){ //If there is a path from the initial to some end
+                    return true;
+            }
+        }
         return false;
     }
 
+    //method that returns the index where is a given state
+    private int findIndex(State S){
+        for (int i=0; i< _nroStates.length; i++){
+            if (_nroStates[i].equals(S)){
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    //Method that builds a matrix corresponding to the relation.
+    public int[][] matrizRelation (int size){
+        int [][] matriz= new int[size][size];
+        State a;
+        for (State b:_states) {
+            int numB=findIndex(b); 
+               for(Character alpha:_alphabet){
+                   System.out.println(numB);
+                a=delta(b,alpha);
+                    if (a!=null){
+                        int numA=findIndex(a); 
+                        System.out.print(numA);
+                        matriz[numB][numA]=1;
+                    } 
+                }
+        }
+        return matriz;
+  }
+
+    //Method based in Wharsall that computes the transitive closure of a relation
+        public int[][] clausuraTransitiva() {
+        int[][] clausura = this.matrizRelation(_states.size());
+        for (int m = 0; m < _states.size(); m++) {
+            for (int i = 0; i < _states.size(); i++) {
+                for (int j = 0; j < _states.size(); j++) {
+                    if (clausura[i][j] == 1) {
+                        for (int k = 0; k < _states.size(); k++) {
+                            if (clausura[j][k] == 1) {
+                                clausura[i][k] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        } 
+        
+        return clausura;
+    }
     /**
      * Checks the automaton for language infinity.
      *
@@ -159,8 +222,22 @@ public class DFA extends FA {
      */
     public boolean is_finite() {
         assert rep_ok();
-        // TODO
-        return false;
+        int [][] relaciones = clausuraTransitiva();
+        for(State fin:_final_states){
+            int columnaFinal = findIndex(fin);  ;
+            System.out.print(columnaFinal);
+            for(int j=0; j<_states.size(); j++){    
+                if((relaciones[j][columnaFinal]==1)){  //las transciones que lleguen a un final
+                    int nroEstadoInicial= findIndex(_initial);  
+                    if (relaciones[nroEstadoInicial][j]==1){ //transiciones que desde el inicial pueden llegar a aquellos que llegan al final
+                        if(relaciones[j][j]==1){ //Si hay ciclo.
+                            return false; 
+                        }
+                    }               
+                }
+            } 
+        }
+        return true;
     }
 
     /**
@@ -250,7 +327,6 @@ public class DFA extends FA {
             union= new NFA(states,alphabet,transitions,initial,final_states);
             union= ((NFA) union).toDFA(); //OJO! PUEDE NO SER UN DFA DEBERIA VER 
         }
-        
         return (DFA) union;                
     }
 
@@ -263,7 +339,7 @@ public class DFA extends FA {
     public DFA intersection(DFA other) {
         assert rep_ok();
         assert other.rep_ok();
-        // TODO
+        
         return null;
     }
 
