@@ -189,8 +189,16 @@ public class DFA extends FA {
      */
     public DFA star() {
         assert rep_ok();
-        // TODO
-        return null;
+            DFA kleene = this;
+            kleene._final_states.add(_initial);
+            while (_states.iterator().hasNext()) {
+                State estado = _states.iterator().next();
+                for (Character c : _alphabet) {
+                    Triple<State,Character,State> t = new Triple (estado, c, _initial);
+                    kleene._transitions.add(t);
+                }
+            }
+        return kleene;
     }
 
     /**
