@@ -109,23 +109,18 @@ public class NFA extends FA {
         }
             
     public boolean accepts2 (State estado, String string){
-
-  
-    if (string.isEmpty())
-			return _final_states.contains(estado);
-         Set<State> siguientes = new HashSet();
-	siguientes= delta(estado,string.charAt(0));
-         boolean res = false;
-                        Iterator i= siguientes.iterator();
-                        State aux;
-                        while (i.hasNext()){
-                            aux= (State)i.next();
-                            res = res || accepts2(aux,string.substring(1));
-                        }
-			
-			return res;
-         
-	
+        if (string.isEmpty())
+            return _final_states.contains(estado);
+        Set<State> siguientes = new HashSet();
+        siguientes= delta(estado,string.charAt(0));
+        boolean res = false;
+        Iterator i= siguientes.iterator();
+        State aux;
+        while (i.hasNext()){
+            aux= (State)i.next();
+            res = res || accepts2(aux,string.substring(1));
+        }
+        return res;        
     }
     
 
