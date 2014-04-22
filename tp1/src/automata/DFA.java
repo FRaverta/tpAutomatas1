@@ -296,6 +296,14 @@ public class DFA extends FA {
             }
         }
         //Check that the transition relation is deterministic.
+        System.out.println("Contain initial: "+ _states.contains(_initial));
+        System.out.println("Contain lamda: "+ containLambda);
+        System.out.println("nonDeterministic: "+ nonDeterministic);
+        System.out.println("transitionsOK"+ transitionOK);
+        System.out.println("statesOK"+ statesOK);
+        
+        
+        
         return _states.contains(_initial) && !containLambda && !nonDeterministic && transitionOK && statesOK;
     }
 }
