@@ -1,5 +1,7 @@
 package automata;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import utils.Triple;
@@ -37,11 +39,40 @@ public class NFALambda extends FA {
     public Set<State> delta(State from, Character c) {
         assert states().contains(from);
         assert alphabet().contains(c);
-        // TODO
-        return null;
+        Iterator i=_transitions.iterator();
+        Triple<State, Character, State> aux;
+        Set<State> result=new HashSet();
+        while (i.hasNext()){
+            aux=(Triple<State, Character, State>) i.next();
+            if (aux.first().equals(from) &&  (c.equals(aux.second())|| (Lambda.equals(aux.second())))) //PROBLEMA CON ; DE FROM
+                {
+                result.add(aux.third()) ;     
+            }
+        }
+        return result;
+    }   
+    
+    @Override
+    public String to_dot() {
+        assert rep_ok();
+        String aux;
+        aux = "digraph{\n";
+        aux = aux + "inic[shape=ponit];\n" + "inic->" + this._initial.name() + ";\n";
+        while (this._transitions.iterator().hasNext()) {
+           Triple triupla = this._transitions.iterator().next();
+           aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" + triupla.second().toString() + "];\n";
+        }
+        aux = "\n";
+        while (this._final_states.iterator().hasNext()){
+            State estado = this._final_states.iterator().next();
+            aux = aux + estado.name() + "[shape=doublecircle];\n";
+        }
+        aux = aux + "}";
+        return aux;
     }
 
-    /*
+
+/*
      *  Automata methods
      */
     @Override
@@ -49,9 +80,33 @@ public class NFALambda extends FA {
         assert rep_ok();
         assert string != null;
         assert verify_string(string);
-        // TODO
-        return false;
-    }
+        return accepts2(_initial,string);
+        }
+            
+    public boolean accepts2 (State estado, String string){
+        Set<State> finalVacio=new HashSet();
+        if (string.isEmpty()){      
+            if (!delta(estado,Lambda).isEmpty()) //si puedo ir a un estado final solo por lambda, (cadena vacia)
+                finalVacio=delta(estado,Lambda);
+            for(State s:finalVacio){
+                if (_final_states.contains(s)){
+                    return true;
+                }
+            }
+            return _final_states.contains(estado);
+        }
+        boolean res = false;
+        for(Triple<State, Character, State> tran:_transitions){
+            System.out.println(estado);
+            System.out.println(string);
+            if (tran.first().equals(estado) &&  tran.second().equals(string.charAt(0))) //si puedo ir a otro estado por el caracter a actual, entones disminuyo la cadena
+                res = res || accepts2(tran.third(),string.substring(1));
+                if (tran.first().equals(estado) &&  tran.second().equals(Lambda)) //si puedo ir por lambda, no disminuyo la cadena solo muevo el estado
+                res = res || accepts2(tran.third(),string);
+        }
+        return res;    
+            }
+    
 
     /**
      * Converts the automaton to a DFA.
