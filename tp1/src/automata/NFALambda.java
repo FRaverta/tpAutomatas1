@@ -97,8 +97,6 @@ public class NFALambda extends FA {
         }
         boolean res = false;
         for(Triple<State, Character, State> tran:_transitions){
-            System.out.println(estado);
-            System.out.println(string);
             if (tran.first().equals(estado) &&  tran.second().equals(string.charAt(0))) //si puedo ir a otro estado por el caracter a actual, entones disminuyo la cadena
                 res = res || accepts2(tran.third(),string.substring(1));
                 if (tran.first().equals(estado) &&  tran.second().equals(Lambda)) //si puedo ir por lambda, no disminuyo la cadena solo muevo el estado
