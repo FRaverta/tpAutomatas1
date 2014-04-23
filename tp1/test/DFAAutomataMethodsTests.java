@@ -7,24 +7,24 @@ import automata.FA;
 
 
 public class DFAAutomataMethodsTests { 
-public static String ruta = "/home/mariano/Escritorio/Automatas/tpAutomatas1/tp1/";
+public static String ruta ="";
 	// Tests for DFA1
 	
 	@Test
 	public void test1() throws Exception {
-		DFA dfa = (DFA) FA.parse_form_file("/home/mariano/Escritorio/Automatas/tpAutomatas1/tp1/test/dfa1.dot");
+		DFA dfa = (DFA) FA.parse_form_file("test/dfa1.dot");
 		assertTrue(dfa.accepts("abbb"));
 	}
 
 	@Test
 	public void test2() throws Exception {
-		DFA dfa = (DFA) FA.parse_form_file("/home/mariano/Escritorio/Automatas/tpAutomatas1/tp1/test/dfa1.dot");
+		DFA dfa = (DFA) FA.parse_form_file("test/dfa1.dot");
 		assertFalse(dfa.accepts("ababb"));
 	}
 	
 	@Test
 	public void test3() throws Exception {
-		DFA dfa = (DFA) FA.parse_form_file("/home/mariano/Escritorio/Automatas/tpAutomatas1/tp1/test/dfa1.dot");
+		DFA dfa = (DFA) FA.parse_form_file("test/dfa1.dot");
 		assertFalse(dfa.complement().accepts("abbb"));
 	}
 	

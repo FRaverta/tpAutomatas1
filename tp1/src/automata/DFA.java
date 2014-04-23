@@ -109,15 +109,21 @@ public class DFA extends FA {
         assert string != null;
         assert verify_string(string);
         State actual = _initial;
-        int lenght = string.length(); 
-	int index = 0;
-	while (lenght != 0){   
+        //int lenght = string.length(); 
+	//int index = 0;
+	/*while (lenght != 0){   
             Character caracterActual = string.charAt(index);        
             actual = delta(actual,caracterActual);
             lenght--; 
             index ++;     
             if (actual == null)
                 return false;
+        }*/
+        for(Character c: string.toCharArray()){
+            actual= delta(actual,c);
+            if (actual==null){
+                return false;
+            }
         }
         return _final_states.contains(actual);       
     }
@@ -125,7 +131,7 @@ public class DFA extends FA {
     /**
      * Converts the automaton to a NFA.
      *
-     * @return NFA recognizing the same language.
+     * @return NFA recognizingthe same language.
      */
     public NFA toNFA() {
         assert rep_ok();
@@ -311,7 +317,7 @@ public class DFA extends FA {
         for(Triple<State,Character,State> t: this._transitions){
             transitions.add(t);
             if (t.first().equals(this._initial)){
-                transitions.add(new Triple(initial,t.second(),t.first()));
+                transitions.add(new Triple(initial,t.second(),t.third()));
             } 
         }
         for(Triple<State,Character,State> t: other._transitions){
@@ -323,7 +329,7 @@ public class DFA extends FA {
             }
             transitions.add(t);
             if (t.first().equals(other._initial)){
-                transitions.add(new Triple(initial,t.second(),t.first()));
+                transitions.add(new Triple(initial,t.second(),t.third()));
             } 
         }
         
