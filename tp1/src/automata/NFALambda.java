@@ -21,7 +21,8 @@ public class NFALambda extends FA {
             throws IllegalArgumentException
     {
         _states= states;
-        _alphabet.remove(new Character(FA.Lambda));
+        _alphabet=alphabet;
+        _alphabet.remove(new Character (FA.Lambda));
         _transitions=transitions;
         _initial=initial;
         _final_states= final_states;
@@ -38,7 +39,7 @@ public class NFALambda extends FA {
     @Override
     public Set<State> delta(State from, Character c) {
         assert states().contains(from);
-        assert alphabet().contains(c);
+        //assert alphabet().contains(c); Porque el LAMBDA no esta en el alfabeto
         Iterator i=_transitions.iterator();
         Triple<State, Character, State> aux;
         Set<State> result=new HashSet();
