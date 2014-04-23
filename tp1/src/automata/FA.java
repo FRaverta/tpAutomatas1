@@ -101,14 +101,13 @@ public abstract class FA {
                 input.close();
             }
         }
-        System.out.println("States: "+ Q.toString());
-        System.out.println("Delta: "+ delta.toString());
-        System.out.println("InitialState: "+ ini.toString());
-        System.out.println("Final Statates: "+ finalStates.toString()); 
+        //System.out.println("States: "+ Q.toString());
+        //System.out.println("Delta: "+ delta.toString());
+        //System.out.println("InitialState: "+ ini.toString());
+        //System.out.println("Final Statates: "+ finalStates.toString()); 
         automaton= builFA(Q,alphabet,delta,ini,finalStates) ;
         return automaton;
-    }
-    
+    }    
 
 //Method for String that contain the following structure: "_ A->B _" so return a pair with (A,B) 
 // PostCondition: (A,B) if String has pattern: A->B or ("","") if it hasn't.    
@@ -136,21 +135,17 @@ public abstract class FA {
     }
     
  //Method that take a set and object and return a reference to object o from q if o in q or return null.   
-    private static State getElemFromSet(Set<State> q,State o){
+    public static State getElemFromSet(Set<State> q,State o){
         //System.out.println("Set: "+ q.toString() + " State: "+ o.toString());
-        Iterator i=q.iterator();
-        State aux;
-        State result=null;
-        while (i.hasNext()){
-            aux=(State) i.next();
-            //System.out.println("Object in set: "+ aux.toString());
-            if (aux.equals(o)){
-                //System.out.println("-- "  +aux.toString() +" is equal to "+ o.toString());
-                result=o;          
-            }
-        }
-        return result;
+       for(State s: q){
+           if (s.name().equals(o.name())){
+               return s;
+           }
+       }
+       return null;
+           
     }
+
  
 //Method that build a concrete FA(DFA.NFA,NFALambda) depending if the parameters.      
  private static FA builFA(

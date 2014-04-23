@@ -134,18 +134,16 @@ public class DFA extends FA {
      *
      * @returns True iff the automaton's language is empty.
      */
-    public boolean is_empty() {
+public boolean is_empty() {
         assert rep_ok();
         int [][] matriz= this.clausuraTransitiva();
-        String nameInicial = _initial.name();
-        nameInicial = nameInicial.substring(1,nameInicial.length());
+        int numInicial=findIndex(_initial);
         Iterator i= _final_states.iterator();
         while (i.hasNext()){
             State fin= (State)i.next();
+            int numFinal=findIndex(fin);
             String nameFinal= fin.name();
-            nameFinal = nameFinal.substring(1,nameFinal.length());
-            int numFin = Integer.parseInt(nameFinal);
-            if (matriz[0][numFin]==0){ //If there is a path from the initial to some end
+            if (matriz[0][numFinal]==0){ //If there is a path from the initial to some end
                     return true;
             }
         }
@@ -230,17 +228,48 @@ public class DFA extends FA {
      *
      * @returns a new DFA accepting the language's complement.
      */
-    public DFA complement() {
-         assert rep_ok();
-        DFA complement = new DFA(_states,_alphabet,_transitions,_initial,new HashSet());
-        Iterator i=_states.iterator();
-        State aux;
-        while(i.hasNext()){
+public DFA complement() {
+        //assert rep_ok();
+        State f= new State("sf" + _initial.name());
+        HashSet<State> final_states=new HashSet();
+        HashSet<State> states=new HashSet();
+        states.add(f);
+        states.addAll(_states);
+        HashSet<Triple<State,Character,State>> transitions= new HashSet();
+        final_states.add(f);
+        transitions.addAll(_transitions);
+        Triple<State,Character,State> t; 
+        for(Character c: _alphabet){
+            t= new Triple(f,c,f);
+            transitions.add(t); //make a transitios to final states for each caracter in alphabet
+        }
+        //Iterator i=_states.iterator();
+        HashSet<Character> notLabel;
+        HashSet<Character> label;
+        for(State s:states){
+            if (FA.getElemFromSet(_final_states,s)==null){ //if states isn't final, so it will be a complemen's final state
+                final_states.add(s);
+            } 
+            notLabel= new HashSet(_alphabet);
+            label=new HashSet();
+            for(Triple<State,Character,State> l: _transitions){
+                if (l.first().equals(s)){
+                    label.add(l.second());
+                }
+            }
+            notLabel.removeAll(label);
+            for(Character o: notLabel){ //create a transitions from state s to "trampa final state" f.
+                t=new Triple(s,o,f);
+                transitions.add(t);
+            }
+        }
+        /*while(i.hasNext()){
             aux= (State) i.next();
             if (!_final_states.contains(aux)){
                 complement._final_states.add(aux);
             }
-        }
+        }*/
+        DFA complement = new DFA(states,_alphabet,transitions,_initial,final_states);
         return complement;
     }
 
@@ -270,7 +299,7 @@ public class DFA extends FA {
      * @returns a new DFA accepting the union of both languages.
      */
     //this=t and other=0
-    public DFA union(DFA other) {
+public DFA union(DFA other) {
         assert rep_ok();
         assert other.rep_ok();
         FA union;
@@ -278,7 +307,7 @@ public class DFA extends FA {
         Set<State> final_states= new HashSet();
         Set<Triple<State,Character,State>> transitions=new HashSet();
         Set<Character> alphabet= new HashSet();
-        State initial= new State("Uq0");
+        State initial= new State("U" + this._initial.name());
         states.add(initial);
         states.addAll(this._states);
         if (this._final_states.contains(this._initial) ||other._final_states.contains(other._initial)){
@@ -289,10 +318,11 @@ public class DFA extends FA {
             states.add(s);
         }
         final_states.addAll(this._final_states);
-        for(State s: other._final_states){
+        final_states.addAll(other._final_states);
+        /* for(State s: other._final_states){
             s.rename("B"+s.name()); //remember that JAVA has a passage of parameters by value
             final_states.add(s);
-        }        
+        }  */      
         for(Triple<State,Character,State> t: this._transitions){
             transitions.add(t);
             if (t.first().equals(this._initial)){
@@ -300,12 +330,12 @@ public class DFA extends FA {
             } 
         }
         for(Triple<State,Character,State> t: other._transitions){
-            if (!t.first().name().startsWith("B")){
+           /* if (!t.first().name().startsWith("B")){
                 t.first().rename("B"+t.first().name());
             }
             if (!t.third().name().startsWith("B")){
                 t.third().rename("B"+t.third().name());
-            }
+            }*/
             transitions.add(t);
             if (t.first().equals(other._initial)){
                 transitions.add(new Triple(initial,t.second(),t.third()));
@@ -330,12 +360,26 @@ public class DFA extends FA {
      * @returns a new DFA accepting the intersection of both languages.
      */
     public DFA intersection(DFA other) {
-        assert rep_ok();
-        assert other.rep_ok();
+       //assert rep_ok();
+       //assert other.rep_ok();
+        for(State s: this.states()){
+            s.rename("A"+s.name());
+        }
+        for(State s: other.states()){
+            s.rename("B"+s.name());
+        }
         
-        return null;
+        System.out.println("\n \n "+this.toString()+"\n \n ");
+        System.out.println(other.toString());
+        DFA cThis= this.complement();
+        
+        //System.out.println("\n cTHIS \n "+ cThis.to_dot());
+        DFA cOther= other.complement();
+        //System.out.println("cOther \n "+ cOther.to_dot());
+        
+        DFA union= cThis.union(cOther);
+        return (union.complement());
     }
-
     @Override
     public boolean rep_ok() {
         boolean containLambda= false;
