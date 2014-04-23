@@ -167,11 +167,9 @@ public boolean is_empty() {
         for (State b:_states) {
             int numB=findIndex(b); 
                for(Character alpha:_alphabet){
-                   System.out.println(numB);
                 a=delta(b,alpha);
                     if (a!=null){
                         int numA=findIndex(a); 
-                        System.out.print(numA);
                         matriz[numB][numA]=1;
                     } 
                 }
@@ -207,8 +205,7 @@ public boolean is_empty() {
         assert rep_ok();
         int [][] relaciones = clausuraTransitiva();
         for(State fin:_final_states){
-            int columnaFinal = findIndex(fin);  ;
-            System.out.print(columnaFinal);
+            int columnaFinal = findIndex(fin); 
             for(int j=0; j<_states.size(); j++){    
                 if((relaciones[j][columnaFinal]==1)){  //las transciones que lleguen a un final
                     int nroEstadoInicial= findIndex(_initial);  
@@ -280,16 +277,20 @@ public DFA complement() {
      */
     public DFA star() {
         assert rep_ok();
-            DFA kleene = this;
-            kleene._final_states.add(_initial);
-            while (_states.iterator().hasNext()) {
-                State estado = _states.iterator().next();
-                for (Character c : _alphabet) {
-                    Triple<State,Character,State> t = new Triple (estado, c, _initial);
-                    kleene._transitions.add(t);
-                }
+            Set<State> statesK= _states;
+            Set<Character> alphabetK= _alphabet;
+            Set<Triple<State, Character, State>> transitionsK=_transitions;
+            State initialK=_initial;
+            Set<State> final_statesK=_final_states;
+            final_statesK.add(initialK);
+            for(State estado:final_statesK){
+                    Triple<State,Character,State> t = new Triple (estado, FA.Lambda, _initial);
+                    transitionsK.add(t);
             }
-        return kleene;
+            
+            NFALambda kleene = new NFALambda(statesK,alphabetK,transitionsK,initialK,final_statesK);
+            return kleene.toDFA();
+       
     }
 
     /**

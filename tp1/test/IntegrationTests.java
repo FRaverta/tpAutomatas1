@@ -33,12 +33,11 @@ public class IntegrationTests {
 	}
 	
 	@Test
-	public void test2() {        
-                    assertTrue(my_nfa.toDFA()!=null);
-                    //assertTrue(my_nfa.toDFA().accepts("ab"));
-                    //assertTrue(my_nfa.toDFA().accepts("abaaaaa"));
-                    //assertFalse(my_nfa.toDFA().accepts("abbbb"));
-                    //assertFalse(my_nfa.toDFA().accepts("a"));
+	public void test2() {  
+                    assertTrue(my_nfa.toDFA().accepts("ab"));
+                    assertTrue(my_nfa.toDFA().accepts("abaaaaa"));
+                    assertFalse(my_nfa.toDFA().accepts("abbbb"));
+                    assertFalse(my_nfa.toDFA().accepts("a"));
 	}
 	
 	@Test

@@ -21,7 +21,7 @@ public class NFALambda extends FA {
             throws IllegalArgumentException
     {
         _states= states;
-        _alphabet=alphabet;
+        _alphabet.remove(new Character(FA.Lambda));
         _transitions=transitions;
         _initial=initial;
         _final_states= final_states;
@@ -121,15 +121,18 @@ public class NFALambda extends FA {
     public boolean rep_ok() {
         boolean statesOK=true;
         boolean transitionOK= true;
+        boolean containsLambda=false;
         //Check that final states are included in 'states'.
         for(State s:_final_states){
             statesOK= _states.contains(s) && statesOK;
         }
         //Check that all transitions are correct. All states and characters should be part of the automaton set of states and alphabet.
         for(Triple<State,Character,State> t:_transitions){
-            transitionOK= _states.contains(t.first()) && _states.contains(t.third()) && _alphabet.contains(t.second()) && transitionOK;
+            transitionOK= _states.contains(t.first()) && _states.contains(t.third()) && (_alphabet.contains(t.second()) || t.second().equals(Lambda)) && transitionOK;
+            if (t.second()==FA.Lambda)
+                containsLambda=true;
         }
-        return _states.contains(_initial) && transitionOK && statesOK;
+        return _states.contains(_initial) && transitionOK && statesOK && containsLambda;
     }
 }
 

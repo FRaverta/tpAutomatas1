@@ -41,7 +41,6 @@ public class NFALambdaCreationTests {
 		finals.add(s1);
 		
 		NFALambda my_nfa = new NFALambda(states, alpha, transitions, initial, finals);
-		
 		assertTrue(my_nfa.rep_ok());	
 	}
 	

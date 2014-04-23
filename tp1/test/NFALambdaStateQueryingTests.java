@@ -79,7 +79,7 @@ public class NFALambdaStateQueryingTests {
 		_set.add('a');
 		_set.add('b');
 		assertTrue(dummy_nfa.alphabet().equals(_set));
-		assertTrue(dummy_nfa.alphabet().contains(FA.Lambda));
+		//assertTrue(dummy_nfa.alphabet().contains(FA.Lambda));
 	}	
 	
 	@Test

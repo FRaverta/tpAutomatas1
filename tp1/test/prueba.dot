@@ -1,0 +1,12 @@
+digraph {
+	inic[shape=point];
+    inic->q0 ;
+    q0->q1 [label="a"];
+    q1->q2 [label="b"];
+    q1->q4 [label="a"];
+    q4->q3 [label="a"];
+    q2->q1 [label="b"];
+
+    q3[shape=doublecircle];
+    
+}
