@@ -36,30 +36,7 @@ public class NFA extends FA {
     /*
      *	State querying 
      */
-    @Override
-    public Set<State> states() {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Set<Character> alphabet() {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public State initial_state() {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Set<State> final_states() {
-        // TODO
-        return null;
-    }
-
+    
     @Override
     public Set<State> delta(State from, Character c) {
         assert states().contains(from);
@@ -76,26 +53,6 @@ public class NFA extends FA {
         }
         return result;
     }   
-
-
-    @Override
-    public String to_dot() {
-        assert rep_ok();
-        String aux;
-        aux = "digraph{\n";
-        aux = aux + "inic[shape=ponit];\n" + "inic->" + this._initial.name() + ";\n";
-        while (this._transitions.iterator().hasNext()) {
-           Triple triupla = this._transitions.iterator().next();
-           aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" + triupla.second().toString() + "];\n";
-        }
-        aux = "\n";
-        while (this._final_states.iterator().hasNext()){
-            State estado = this._final_states.iterator().next();
-            aux = aux + estado.name() + "[shape=doublecircle];\n";
-        }
-        aux = aux + "}";
-        return aux;
-    }
 
     /*
      *  Automata methods

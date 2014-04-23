@@ -192,22 +192,29 @@ public abstract class FA {
     /**
      * @return the atomaton's set of states.
      */
-    public abstract Set<State> states();
-
-    /**
+    public Set<State> states(){
+        return _states;
+    }
+     /**
      * @return the atomaton's alphabet.
      */
-    public abstract Set<Character> alphabet();
+    public Set<Character> alphabet(){
+        return _alphabet;
+    }
 
     /**
      * @return the atomaton's initial state.
      */
-    public abstract State initial_state();
+    public State initial_state(){
+        return _initial;
+    }
 
     /**
      * @return the atomaton's final states.
      */
-    public abstract Set<State> final_states();
+    public Set<State> final_states(){
+        return _final_states;
+    }
 
     /**
      * Query for the automaton's transition function.
@@ -221,8 +228,26 @@ public abstract class FA {
     /**
      * @return Returns the DOT code representing the automaton.
      */
-    public abstract String to_dot();
-
+    public String to_dot(){
+        assert rep_ok();
+        Iterator i;
+        String aux;
+        aux = "digraph{\n";
+        aux = aux + "inic[shape=point];\n" + "inic->" + this._initial.name() + ";\n";
+        i=this._transitions.iterator();
+        while (i.hasNext()) {
+           Triple triupla =(Triple) i.next();
+           aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" + triupla.second().toString() + "];\n";
+        }
+        aux = aux+ "\n";
+        i=this._final_states.iterator();
+        while (i.hasNext()){
+            State estado = (State) i.next();
+            aux = aux + estado.name() + "[shape=doublecircle];\n";
+        }
+        aux = aux + "}";
+        return aux;
+    }
     /*
      * 	Automata Methods 
      */

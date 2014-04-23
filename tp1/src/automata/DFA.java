@@ -41,25 +41,7 @@ public class DFA extends FA {
     /*
      *	State querying 
      */
-    @Override
-    public Set<State> states() {
-        return _states;
-    }
-
-    @Override
-    public Set<Character> alphabet() {
-        return _alphabet;
-    }
-
-    @Override
-    public State initial_state() {
-        return _initial;
-    }
-
-    @Override
-    public Set<State> final_states() {
-        return _final_states;
-    }
+    
 
     @Override
     public State delta(State from, Character c) {
@@ -77,28 +59,6 @@ public class DFA extends FA {
         }
         return result;
     }   
-
-    @Override
-    public String to_dot() {
-        assert rep_ok();
-        Iterator i;
-        String aux;
-        aux = "digraph{\n";
-        aux = aux + "inic[shape=point];\n" + "inic->" + this._initial.name() + ";\n";
-        i=this._transitions.iterator();
-        while (i.hasNext()) {
-           Triple triupla =(Triple) i.next();
-           aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" + triupla.second().toString() + "];\n";
-        }
-        aux = aux+ "\n";
-        i=this._final_states.iterator();
-        while (i.hasNext()){
-            State estado = (State) i.next();
-            aux = aux + estado.name() + "[shape=doublecircle];\n";
-        }
-        aux = aux + "}";
-        return aux;
-    }
 
   /*
      *  Automata methods
@@ -135,8 +95,18 @@ public class DFA extends FA {
      */
     public NFA toNFA() {
         assert rep_ok();
-        // TODO
-        return null;
+        String name="ficticio";
+        State ficticio = new State(name);
+        _states.add(ficticio);
+        Triple<State,Character,State> t = new Triple(_initial,_alphabet.iterator().next(),ficticio);
+        _transitions.add(t);
+        for (Character c:_alphabet){
+            //Character c = this.alphabet().iterator().next();
+            t = new Triple(ficticio, c, ficticio);
+           _transitions.add(t);
+        }
+        NFA noDet = new NFA(_states,_alphabet,_transitions,_initial,_final_states);
+        return noDet;
     }
 
     /**
@@ -146,8 +116,17 @@ public class DFA extends FA {
      */
     public NFALambda toNFALambda() {
         assert rep_ok();
-        // TODO
-        return null;
+        NFALambda noDetLambda = new NFALambda(_states,_alphabet,_transitions,_initial,_final_states);
+        String name="ficticio";
+        State ficticio = new State(name);
+        noDetLambda._states.add(ficticio);
+        Triple<State,Character,State> t = new Triple(noDetLambda._initial,FA.Lambda,ficticio);
+        noDetLambda._transitions.add(t);
+        for (Character c:_alphabet){
+            t = new Triple(ficticio, c, ficticio);
+            noDetLambda._transitions.add(t);
+        }
+        return noDetLambda;
     }
 
     /**
