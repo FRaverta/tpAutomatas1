@@ -114,10 +114,100 @@ public class NFALambda extends FA {
      */
     public DFA toDFA() {
         assert rep_ok();
-        // TODO
-        return null;
+        
+        Set<State> ini= clausuraLambdaState(this._initial);
+        Set<Set<State>> states= new HashSet();
+        states.add(ini);
+        State dInitial= new State(getStateName(ini));
+        int lastSize=0;
+        Set<Set<State>> auxSet= new HashSet();
+        Set<State> newSet= new HashSet();
+        Set<Triple<Set<State>,Character,Set<State>>> transitions= new HashSet();//Set of transitions between set of states        
+        
+        while(lastSize!=states.size()){ //If the loop don't add a new set of states so we have all reachable states
+            lastSize=states.size(); //update the size before start a new loop
+            auxSet=new HashSet(); //refresh auxSet
+            for(Set<State> s: states){ //for each state
+                 for(Character c: _alphabet){ //for each character
+                    newSet=new HashSet(); 
+                    for(State sub: s){//calculate the reachable state for each caracter                   
+                        newSet.addAll(delta(sub,c));
+                        for (State q: newSet){
+                            newSet.addAll(clausuraLambdaState(q));//add landa clausure for set
+                        }
+                    }
+                    if(!newSet.isEmpty()){
+                        auxSet.add(newSet); //add the reachable state from s by char c.    
+                    }
+                }
+            }            
+            states.addAll(auxSet);//add the new reachable states
+        }
+        State aux;
+        String name;
+        Set<State> dStates=new HashSet();
+        for(Set<State> set:states){//loop for generate a correct representation for states
+            name= getStateName(set); //make a compound name
+            aux= new State(name);//make a state with a compound name
+            dStates.add(aux); //add state to the deterministic states set
+        }
+        
+        Triple<Set<State>,Character,Set<State>> t;
+        Set<State> goTo;
+        for(Character c: _alphabet){ //loop for generate a transition between states
+            for(Set<State> set: states){
+                goTo= new HashSet();
+                for(State s: set){
+                    goTo.addAll(delta(s,c)); //for each char, for each state I search the reachable states
+                }
+                if (!goTo.isEmpty()){
+                    t= new Triple(set,c,goTo); //make a transitions representations
+                    transitions.add(t);
+                }    
+            }
+        }
+                HashSet dTransitions= new HashSet();
+        Triple<State,Character,State> dt;
+        //loop for generate a correct representation for deteriministic delta fuction
+        for (Triple<Set<State>,Character,Set<State>>r: transitions){
+            dt= new Triple(FA.getElemFromSet(dStates,new State(getStateName(r.first()))), r.second(), FA.getElemFromSet(dStates,new State(getStateName(r.third()))));
+            dTransitions.add(dt);
+        }
+        HashSet<State> dFinalStates= new HashSet();
+        boolean isFinal;
+        for(Set<State> s: states){
+            isFinal=false;
+            //loop for detected final states.
+            for(State q: s){
+                isFinal=isFinal || _final_states.contains(q); //if a set  contain any final states so it is final
+            }    
+            if (isFinal){ //if isFinal, add to final states set
+                aux= FA.getElemFromSet(dStates,new State(getStateName(s)));
+                dFinalStates.add(aux);
+            }
+        }
+        
+        /*System.out.println("States: "+ dStates.toString());
+        System.out.println("Delta: "+ dTransitions.toString());
+        System.out.println("InitialState: "+ dInitial.toString());
+        System.out.println("Final Statates: "+ dFinalStates.toString());*/ 
+        DFA res= new DFA(dStates,_alphabet,dTransitions,dInitial,dFinalStates);
+        return res; //return a deterministic FA
+                
     }
 
+        String getStateName(Set<State> set){
+        //String name="{";
+        String name="";
+        for(State s:set){          
+            /*if (name.length()>1){
+                name=name+",";
+            }  */  
+            name=name+s.name();
+        }
+        //name=name+"}";                    
+        return name;        
+    }
         public Set<State> clausuraLambdaState(State s){
         //metodo que dado estado da la clausura lambda de ese estado
             Set<State> estados=new HashSet();
