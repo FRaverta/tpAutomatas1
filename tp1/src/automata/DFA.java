@@ -1,3 +1,8 @@
+/********************************NFALambda.java*****************************************/
+/* Archivo que implementa un Automata Finito Deterministico                            */
+/*                                                                                     */
+/*Cornejo, Politano, Raverta                                                           */
+/***************************************************************************************/
 package automata;
 
 import java.lang.reflect.Array;

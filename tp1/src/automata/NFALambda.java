@@ -1,3 +1,9 @@
+/********************************NFALambda.java*****************************************/
+/* Archivo que implementa un Automata Finito No Deterministico con transiciones lambda */
+/*                                                                                     */
+/*Cornejo, Politano, Raverta                                                           */
+/***************************************************************************************/
+
 package automata;
 
 import java.util.HashSet;
@@ -71,8 +77,7 @@ public class NFALambda extends FA {
         aux = aux + "}";
         return aux;
     }
-
-
+    
 /*
      *  Automata methods
      */
@@ -83,30 +88,33 @@ public class NFALambda extends FA {
         assert verify_string(string);
         return accepts2(_initial,string);
         }
-            
-    public boolean accepts2 (State estado, String string){
-        Set<State> finalVacio=new HashSet();
-        if (string.isEmpty()){      
-            if (!delta(estado,Lambda).isEmpty()) //si puedo ir a un estado final solo por lambda, (cadena vacia)
-                finalVacio=delta(estado,Lambda);
-            for(State s:finalVacio){
-                if (_final_states.contains(s)){
+    
+    public boolean containsOneFinal(Set<State> set){
+        for(State fin:_final_states){
+            for(State state:set){
+                if(fin.equals(state))
                     return true;
-                }
             }
-            return _final_states.contains(estado);
+        }
+        return false;
+    }
+            
+    
+    public boolean accepts2 (State estado, String string){
+        if (string.isEmpty()){      
+            Set<State> finalVacio=this.clausuraLambdaState(estado);
+            return containsOneFinal(finalVacio);
         }
         boolean res = false;
         for(Triple<State, Character, State> tran:_transitions){
             if (tran.first().equals(estado) &&  tran.second().equals(string.charAt(0))) //si puedo ir a otro estado por el caracter a actual, entones disminuyo la cadena
                 res = res || accepts2(tran.third(),string.substring(1));
-                if (tran.first().equals(estado) &&  tran.second().equals(Lambda)) //si puedo ir por lambda, no disminuyo la cadena solo muevo el estado
+               if (tran.first().equals(estado) &&  tran.second().equals(Lambda)) //Clausura LAMBDA, si puedo ir por lambda, no disminuyo la cadena solo muevo el estado
                 res = res || accepts2(tran.third(),string);
         }
         return res;    
             }
     
-
     /**
      * Converts the automaton to a DFA.
      *

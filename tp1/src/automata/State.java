@@ -1,3 +1,8 @@
+/********************************NFALambda.java*****************************************/
+/* Archivo que implementa un estado                                                    */
+/*                                                                                     */
+/*Cornejo, Politano, Raverta                                                           */
+/***************************************************************************************/
 package automata;
 
 public class State {

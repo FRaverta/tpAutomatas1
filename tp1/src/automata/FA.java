@@ -1,3 +1,8 @@
+/********************************NFALambda.java*****************************************/
+/* Archivo que implementa un Automata Finito                                           */
+/*                                                                                     */
+/*Cornejo, Politano, Raverta                                                           */
+/***************************************************************************************/
 package automata;
 
 import java.io.File;
