@@ -118,6 +118,25 @@ public class NFALambda extends FA {
         return null;
     }
 
+        public Set<State> clausuraLambdaState(State s){
+        //metodo que dado estado da la clausura lambda de ese estado
+            Set<State> estados=new HashSet();
+            int oldLength=0;
+            estados.add(s);
+            while(oldLength!= estados.size()){
+                oldLength= estados.size();
+                for (State a: estados){							
+                    for (Triple<State, Character, State> transiciones: _transitions){
+		        if (transiciones.second()==FA.Lambda && a.equals(transiciones.first())){
+                            estados.add(transiciones.third()); //estos son los alcanzables desde el primero
+                        }
+                    }
+                }
+	}
+        return estados;
+    }
+    
+    
     @Override
     public boolean rep_ok() {
         boolean statesOK=true;
