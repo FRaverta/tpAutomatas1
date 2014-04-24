@@ -123,13 +123,13 @@ public class NFALambda extends FA {
     public DFA toDFA() {
         assert rep_ok();
         
-        Set<State> ini= clausuraLambdaState(this._initial);
-        Set<Set<State>> states= new HashSet();
-        states.add(ini);
-        State dInitial= new State(getStateName(ini));
-        int lastSize=0;
-        Set<Set<State>> auxSet= new HashSet();
-        Set<State> newSet= new HashSet();
+        Set<State> ini= clausuraLambdaState(this._initial);  //Dfa's initial state is clausura lambda de this.q0
+        Set<Set<State>> states= new HashSet(); //states for contain the DFA's states
+        states.add(ini); //add initial state to dfa's states
+        State dInitial= new State(getStateName(ini));  //create a correct representation for DFA
+        int lastSize=0; 
+        Set<Set<State>> auxSet;
+        Set<State> newSet;
         Set<Triple<Set<State>,Character,Set<State>>> transitions= new HashSet();//Set of transitions between set of states        
         
         while(lastSize!=states.size()){ //If the loop don't add a new set of states so we have all reachable states
@@ -139,8 +139,8 @@ public class NFALambda extends FA {
                  for(Character c: _alphabet){ //for each character
                     newSet=new HashSet(); 
                     for(State sub: s){//calculate the reachable state for each caracter                   
-                        newSet.addAll(delta(sub,c));
-                        for (State q: newSet){
+                        newSet.addAll(delta(sub,c)); 
+                        for (State q: newSet){ //calculate the landa clausure for reachable state
                             newSet.addAll(clausuraLambdaState(q));//add landa clausure for set
                         }
                     }
@@ -208,12 +208,8 @@ public class NFALambda extends FA {
         //String name="{";
         String name="";
         for(State s:set){          
-            /*if (name.length()>1){
-                name=name+",";
-            }  */  
             name=name+s.name();
         }
-        //name=name+"}";                    
         return name;        
     }
         public Set<State> clausuraLambdaState(State s){
