@@ -59,6 +59,22 @@ public class NFALambda extends FA {
         return result;
     }   
     
+        public Set<State> deltaNFA(State from, Character c) {
+        assert states().contains(from);
+        assert alphabet().contains(c);
+        Iterator i=_transitions.iterator();
+        Triple<State, Character, State> aux;
+        Set<State> result=new HashSet();
+        while (i.hasNext()){
+            aux=(Triple<State, Character, State>) i.next();
+            if (c.equals(aux.second()) && aux.first().equals(from)) //PROBLEMA CON ; DE FROM
+                {
+                result.add(aux.third()) ;     
+            }
+        }
+        return result;
+    }
+    
     
 /*
      *  Automata methods
@@ -103,6 +119,9 @@ public class NFALambda extends FA {
      * @return DFA recognizing the same language.
      */
     public DFA toDFA() {
+        
+        Triple<Set<State>,Character,Set<State>> t;
+        
         assert rep_ok();
         
         Set<State> ini= clausuraLambdaState(this._initial);  //Dfa's initial state is clausura lambda de this.q0
@@ -121,13 +140,15 @@ public class NFALambda extends FA {
                  for(Character c: _alphabet){ //for each character
                     newSet=new HashSet(); 
                     for(State sub: s){//calculate the reachable state for each caracter                   
-                        newSet.addAll(delta(sub,c)); 
+                        newSet.addAll(deltaNFA(sub,c)); 
                         for (State q: newSet){ //calculate the landa clausure for reachable state
                             newSet.addAll(clausuraLambdaState(q));//add landa clausure for set
                         }
                     }
                     if(!newSet.isEmpty()){
-                        auxSet.add(newSet); //add the reachable state from s by char c.    
+                        auxSet.add(newSet); //add the reachable state from s by char c.  
+                        t= new Triple(s,c,newSet); //make a transitions representations
+                        transitions.add(t);
                     }
                 }
             }            
@@ -142,21 +163,7 @@ public class NFALambda extends FA {
             dStates.add(aux); //add state to the deterministic states set
         }
         
-        Triple<Set<State>,Character,Set<State>> t;
-        Set<State> goTo;
-        for(Character c: _alphabet){ //loop for generate a transition between states
-            for(Set<State> set: states){
-                goTo= new HashSet();
-                for(State s: set){
-                    goTo.addAll(delta(s,c)); //for each char, for each state I search the reachable states
-                }
-                if (!goTo.isEmpty()){
-                    t= new Triple(set,c,goTo); //make a transitions representations
-                    transitions.add(t);
-                }    
-            }
-        }
-                HashSet dTransitions= new HashSet();
+        HashSet dTransitions= new HashSet();
         Triple<State,Character,State> dt;
         //loop for generate a correct representation for deteriministic delta fuction
         for (Triple<Set<State>,Character,Set<State>>r: transitions){
