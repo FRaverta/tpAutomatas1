@@ -228,8 +228,9 @@ public abstract class FA {
     /**
      * @return Returns the DOT code representing the automaton.
      */
-    public String to_dot(){
+    public final String to_dot(){
         assert rep_ok();
+        char comilla= '"';
         Iterator i;
         String aux;
         aux = "digraph{\n";
@@ -237,7 +238,7 @@ public abstract class FA {
         i=this._transitions.iterator();
         while (i.hasNext()) {
            Triple triupla =(Triple) i.next();
-           aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" + triupla.second().toString() + "];\n";
+           aux = aux + triupla.first().toString() + "->" + triupla.third().toString() + " [label=" +comilla+ triupla.second().toString() +comilla+ "];\n";
         }
         aux = aux+ "\n";
         i=this._final_states.iterator();

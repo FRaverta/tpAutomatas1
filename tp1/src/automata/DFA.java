@@ -9,7 +9,10 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import utils.DisjointSet;
 
 import utils.Triple;
 
@@ -424,5 +427,128 @@ public DFA union(DFA other) {
         
         
         return _states.contains(_initial) && !containLambda && !nonDeterministic && transitionOK && statesOK;
+    }
+
+//Algotithm that return the smaller DFA equivalent to this    
+    public DFA minimizer(){
+        DisjointSet<State> disjointSet= new DisjointSet(this.states());
+        //first separation by final and not final. 
+        State finalAgent= this.final_states().iterator().next(); //Take agent for final states
+        State notFinalAgent=null; 
+        for(State s: this.states()){//take agent for not final stage
+            if (!this.final_states().contains(s)){
+                notFinalAgent= s;
+                break;
+            }
+        }
+        for(State s: this.states()){//take agent for not final stage
+            if (this.final_states().contains(s)){
+                disjointSet.union(finalAgent,s);
+            }else{
+                disjointSet.union(notFinalAgent, s);
+            }
+         }
+       //Main loop Alghoritm 
+        boolean isSon=true;
+        int lastSize=0;
+        while ( lastSize!=disjointSet.size()){
+            DisjointSet oldDisjointSet= disjointSet.copy(); //Make a copy of last classes.     
+            lastSize= disjointSet.size(); //update lastSize
+            for(Set<State> set: disjointSet.toSet()){// take each class
+                List<State> newClasees= new LinkedList();
+                for(State s: set){//take each state 
+                  if (newClasees.isEmpty()){
+                      disjointSet.disUnite(s);
+                      newClasees.add(s);
+                  }else{
+                      for(State father: newClasees){ //search parent for s(busqueda de clase de equivalencia de s)
+                          isSon=true;
+                          for(Character c: this.alphabet()){
+                              if (delta(father,c)!=null){
+                                  if (delta(s,c)!=null){
+                                    isSon= isSon && oldDisjointSet.father(delta(father,c)).equals(oldDisjointSet.father(delta(s,c)));        
+                                  }else{
+                                      isSon=false;
+                                      break;
+                                  }   
+                              }else{
+                                  isSon= isSon && null==delta(s,c);
+                              }      
+                          }
+                          if (isSon){
+                              disjointSet.disUnite(s); //State S goes out from his last class. 
+                              disjointSet.union(father,s); // State S entry to new class 
+                              break; //No need more iteration, S has class now. 
+                          }
+                     }
+                     if (!isSon){ //Si s no coincide con ningun estado de la clase pasa a formar una clase solo
+                         disjointSet.disUnite(s); //State S goes out  from his last class 
+                         newClasees.add(s); //State S is a new class's father now.
+                    }                                        
+                  } 
+               }
+            }                 
+        }
+        //create a new DFA minimized
+        State mInitial=disjointSet.father(this._initial) ;
+        Set<State> mStates= new HashSet();
+        Set<State> mFinalStates= new HashSet();
+        for (Set<State> s: disjointSet.toSet()){
+            State agent=disjointSet.father(s.iterator().next());
+            mStates.add(agent); //put a agent for each class
+            if (this.final_states().contains(agent)){
+                mFinalStates.add(agent);
+            }
+        }
+        
+        Set<Triple<State,Character,State>>mTransitions= new HashSet();
+        for(State s: mStates){
+            for(Character c: _alphabet){
+                if (delta(s,c)!=null){
+                    mTransitions.add(new Triple<State,Character,State>(s,c,disjointSet.father(delta(s,c))) );
+                }
+            }
+        }
+        System.out.println("Final States: " + mFinalStates.toString());
+        return new DFA(mStates,_alphabet, mTransitions,mInitial,mFinalStates);
+    }
+    
+   
+    
+    
+    //Method that take a Set<States> and return a string that contain all state's names concatenate     
+//for example getStateName([q0,q1,q2]) return q0q1q2
+    String getStateName(Set<State> set){
+        //String name="{";
+        String name="";
+        for(State s:set){          
+            /*if (name.length()>1){
+                name=name+",";
+            }  */  
+            name=name+s.name();
+        }
+        //name=name+"}";                    
+        return name;        
+    }
+    
+    //Method that return if 2 AFD's are equivalent (recognize the same language)
+    public boolean areEquivalent(DFA dfa2){
+        Set<State> auxStates= new HashSet();
+        auxStates.addAll(this.states());
+        auxStates.addAll(dfa2.states());
+        Set<Triple<State,Character,State>> auxTransitions= new HashSet();
+        auxTransitions.addAll(this._transitions);
+        auxTransitions.addAll(dfa2._transitions);
+        Set<State> auxFinalState= new HashSet();
+        auxFinalState.addAll(this.final_states());
+        auxFinalState.addAll(dfa2.final_states());
+        Set<Character> auxAlphabet=new HashSet();
+        auxAlphabet.addAll(this._alphabet);
+        auxAlphabet.addAll(dfa2._alphabet);
+        
+        DFA aux= new DFA(auxStates,auxAlphabet,auxTransitions,_initial,auxFinalState);
+        DFA auxMinimum= aux.minimizer();
+        
+        return (auxMinimum.states().contains(_initial) && !auxMinimum.states().contains(dfa2._initial)) || (!auxMinimum.states().contains(_initial) && auxMinimum.states().contains(dfa2._initial));
     }
 }
