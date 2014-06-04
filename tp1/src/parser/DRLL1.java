@@ -1,10 +1,8 @@
 /*
- * 
+ *Implementacion de un parser descendente recursivo LL(1) de expresiones regulares
  * 
  */
 package parser;
-
-import java.util.Stack;
 
 /**
  *
@@ -12,27 +10,123 @@ import java.util.Stack;
  */
 public class DRLL1{
     
-    public static Stack<String> word;
+    public static char[]  word;
+    static int i;
     
-    public String[] terminals={"|","*","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","(",")"};
-    public String[] nonterminals={"E","F","T","L","E1","F1","T1"};
-    private static boolean E(){
-        //search table
-        if (true/* xi isn't a terminal */){
-            //call search table    
-        }else{if(true){//if xi es igual al simbolo de entrada
-            //avanzar la entrada hasta el siguiente simbolo
-        
+    private static char marca= '$';
+    
+    private static void S() throws Exception{
+        if(word[i]=='(' || isLetter(word[i])){ //poner igual a una letra cualquiera
+            E();
+            if (word[i]==marca){
             }else{
-                  return false;
-                 }
+                throw new Exception("It isn't a language word");
+            }
+        }else{
+              throw new Exception("It isn't a language word");
         }
-        return true;
+    }
+    
+    private static void E() throws Exception{
+        if(word[i]=='(' || isLetter(word[i])){
+            T();
+            E1();    
+        }else{
+           throw new Exception("It isn't a language word");
+        }
+    }
+    
+    private static void E1() throws Exception{
+        if(word[i]==')' || word[i]==marca){
+            //nothing
+        }else{ if (word[i]=='|'){
+                                    i++;
+                                    T();
+                                    E1();
+                                }else{
+                                        throw new Exception("It isn't a language word");
+                                      }
+              } 
+    }
+    
+    private static void F() throws Exception{
+        if(word[i]=='(' || isLetter(word[i])){
+            L();
+            F1();
+        }else{
+              throw new Exception("It isn't a language word");
+        }
+    }
+
+    private static void F1() throws Exception{
+        if(word[i]==')' || word[i]=='.' || word[i]=='|' || word[i]==marca){
+            //nada is a epsiolon
+        }else{ if(word[i]=='*'){
+                                    i++;
+                                    F1();
+                               }else{
+                                        throw new Exception("It isn't a language word");
+                                     }                            
+            }    
+    }
+            
+    private static void L() throws Exception{
+        if(word[i]=='('){
+            i++;
+            E();
+            if(word[i]==')'){
+                i++;
+            }else{
+                  throw new Exception("It isn't a language word");
+            }
+        }else{if(isLetter(word[i])){
+                i++;
+            }else{
+                    throw new Exception("It isn't a language word");
+                  }           
+         }
+    }
+    
+    private static void T() throws Exception{
+        if (word[i]=='(' || isLetter(word[i])){
+            F();
+            T1();
+        }else{
+              throw new Exception("It isn't a language word");
+        }
+    }
+    
+    private static void T1() throws Exception{
+        if(word[i]=='.'){
+            i++;
+            F();
+            T1();
+        }else{ if (word[i]==')' || word[i]=='|' || word[i]==marca){
+                //nothing is epsiolon
+            }else{
+              throw new Exception("It isn't a language word");
+            }
+        }
     }
     
     public static boolean parser(String w){
-        word= new Stack<String>();
-        return E();
+        w=w + marca;
+        word= w.toCharArray();       
+        i=0;
+        try{
+            S();
+            return true;            
+        }catch(Exception e){
+            return false;
+        }
     }
     
-}
+    private static boolean isLetter(char a){
+        if (((int) a)>=97 && ((int) a)<=122){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+ }
