@@ -1,11 +1,6 @@
 
 import automata.AP;
 import automata.DFAPila;
-<<<<<<< HEAD
-import automata.FA;
-import java.io.FileWriter;
-=======
->>>>>>> cesar
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
