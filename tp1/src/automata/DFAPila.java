@@ -38,6 +38,7 @@ public final class DFAPila extends AP {
         _initial=initial;
         _final_states= final_states;
         _nroStates=  _states.toArray();
+        _stack= new Stack<Character>();
         if (rep_ok()){
             throw new  IllegalArgumentException();
         }
@@ -53,7 +54,7 @@ public final class DFAPila extends AP {
         State result=null;
         while (i.hasNext()){
             aux=(Quintupla<State, Character,Character,String, State>) i.next();
-            if (c.equals(aux.second()) && aux.first().equals(from)) {//PROBLEMA CON ; DE FROM
+            if (c.equals(aux.second()) && aux.first().equals(from)) {
                 if (!aux.third().equals(Comodin)){
                     Character pop = _stack.pop();
                     if (aux.third().equals(pop)) {

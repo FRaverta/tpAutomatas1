@@ -66,7 +66,7 @@ public abstract class AP {
         Pair<String> p;
         State ini=null;
         State aux1,aux2;
-        Set<Character> alphabetStack = null;
+        Set<Character> alphabetStack = new HashSet();
         Quintupla<State,Character,Character,String,State> transition;
         Set<State> Q= new HashSet();
         Set<Quintupla<State,Character,Character,String,State>> delta= new HashSet();
@@ -76,15 +76,14 @@ public abstract class AP {
             f = new File(path);
             input=new Scanner(f);
             while (input.hasNextLine()) {
-                System.out.println("encontre una linea"); 
                 line = input.nextLine();
+                System.out.println("encontre la linea: "+ line); 
+
                  if (line.contains("->")){
                     p=getNodes(line);
-                    //System.out.println(p.toString());
                     if (p.getFrst().equals("inic")){
                      ini= new State(p.getScond());
                      Q.add(ini);
-                     //System.out.println("Initial State: " + ini.toString());
                     }else{
                             aux1=new State(p.getFrst());
                             aux2= new State(p.getScond());     
@@ -98,14 +97,11 @@ public abstract class AP {
                             char letter = cadena[0];
                             char letterStack = cadena[2];
                             String string = new String();
-                            System.out.println(cadena[4]);
                             for (int j=3; j<cadena.length; j++){
-                                System.out.println("dentro de label");
-                                //System.out.println(cadena[j]);
                                 if (cadena[j]!='/'){
                                     string = string + cadena[j];
                                     alphabetStack.add(new Character(cadena[j]));
-                                    System.out.println(cadena[j]);
+                                    
                                 }
                             }
                             transition= new Quintupla(getElemFromSet(Q,aux1),letter,letterStack,string,getElemFromSet(Q,aux2));
@@ -127,7 +123,6 @@ public abstract class AP {
                                     //System.out.println("--Final State: "+ getElemFromSet(Q,aux1).toString() );
                                  }    
                         }else{
-                              //System.out.println(line); //erase 
                               }
                  }
              } 
@@ -221,7 +216,7 @@ public abstract class AP {
         i=this._transitions.iterator();
         while (i.hasNext()) {
            Quintupla quintupla =(Quintupla) i.next();
-           aux = aux + quintupla.first().toString() + "->" + quintupla.fifth().toString() + " [label=" +comilla+ quintupla.second().toString() +"/"+ quintupla.third()+"/"+quintupla.fourth()+ "];\n";
+           aux = aux + quintupla.first().toString() + "->" + quintupla.fifth().toString() + " [label=" +comilla+ quintupla.second().toString() +"/"+ quintupla.third()+"/"+quintupla.fourth()+ comilla+ "];\n";
         }
         aux = aux+ "\n";
         i=this._final_states.iterator();
