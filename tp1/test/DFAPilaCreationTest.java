@@ -9,10 +9,7 @@ import org.junit.Test;
 import utils.Quintupla;
 import utils.Triple;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 /**
  *
@@ -39,7 +36,8 @@ public class DFAPilaCreationTest {
 		alpha.add('b');
                 stackAlphabet.add('a');
                 stackAlphabet.add('b');
-                
+                stackAlphabet.add('@');
+     
 		transitions.add(new Quintupla(s0, 'a','@',"a", s1));
 		transitions.add(new Quintupla(s1, 'a','a',"aa", s1));
 		transitions.add(new Quintupla(s1, 'b','a',"_", s2));

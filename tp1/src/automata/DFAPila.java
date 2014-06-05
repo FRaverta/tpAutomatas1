@@ -4,21 +4,22 @@
  */
 package automata;
 
-import static automata.FA.Lambda;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 import utils.Quintupla;
-import utils.Triple;
+
 
 /**
- *
- * @author cesar
+ * Implements a Automaton Deterministic with stack
+ * @author cesar,nando,mariano
  */
 public final class DFAPila extends AP {
 
+    /*
+    constructor
+    * */
     private   Object _nroStates[] ;
-    private Stack<Character> stack;
+    private Stack<Character> stack; //the stack of the automaton
     
     public DFAPila(
             Set<State> states,
@@ -33,68 +34,80 @@ public final class DFAPila extends AP {
         _states= states;
         _alphabet=alphabet;
         _stackAlphabet= stackAlphabet;
+        _stackAlphabet.add(Lambda); //the character lambda is used in the stack to know when do a pop
+        _stackAlphabet.add(Comodin); //the mark of the stack
         _transitions=transitions;
         _stackInitial=stackInitial;
         _initial=initial;
         _final_states= final_states;
         _nroStates=  _states.toArray();
         _stack= new Stack<Character>();
-        if (rep_ok()){
+        _stack.add(Comodin); //insert the mark in the stack
+        if (!rep_ok()){
             throw new  IllegalArgumentException();
         }
         System.out.println("Is a DFA Pila");
     }
         
-        
-    public State delta(State from, Character c) {
+    
+    @Override    
+    public State delta(State from, Character c){
         assert states().contains(from);
         assert alphabet().contains(c);
-        Iterator i=_transitions.iterator();
-        Quintupla<State, Character,Character,String, State> aux;
-        State result=null;
-        while (i.hasNext()){
-            aux=(Quintupla<State, Character,Character,String, State>) i.next();
-            if (c.equals(aux.second()) && aux.first().equals(from)) {
-                if (!aux.third().equals(Comodin)){
-                    Character pop = _stack.pop();
-                    if (aux.third().equals(pop)) {
-                        for (int j = 0; j < aux.fourth().length(); j++){
-                            if (!c.equals('-')) _stack.push(aux.fourth().charAt(j));
-                        }
-                    result=aux.fifth();      
-                    }else{
-                    if(!c.equals('_'))
-                        _stack.push(pop);
-                    }
-                }else{
-                    for (int j = 0; j < aux.fourth().length(); j++){
-                        _stack.push(aux.fourth().charAt(j));
-                    }
-                    result = aux.fifth();
+        assert rep_ok();
+        State result = null;
+        Quintupla<State, Character,Character,String, State> avaiableT = null;
+        //search in all the transitions if exist a valid transition
+        for(Quintupla<State, Character,Character,String, State> aux : _transitions) {
+            boolean condition = true;
+            condition &= aux.first().equals(from);
+            condition &= aux.second().equals(c);// || aux.second().equals(Lambda);
+            condition &= aux.third().equals(_stack.peek());
+                if(condition) {
+                    avaiableT=aux;
+                    break;
                 }
-            }
         }
-       return result;  
-    }
-    
+        if (avaiableT!=null){   //exist a valid transition
+            if (!avaiableT.third().toString().equals(avaiableT.fourth())){ //the transition do a modification in the stack
+                if (!(avaiableT.fourth().equals("_"))){  //the transition makes a push in the stack      
+                    if (!_stack.peek().equals(Comodin)){ //the top of the stack is not "@" the mark of the stack so it is possible make a pop and then push all
+                        _stack.pop();
+                    }
+                    for (int j = 0; j < avaiableT.fourth().length(); j++){ 
+                        _stack.push(avaiableT.fourth().charAt(j)); //makes the push on the stack
+                    }
+                }else{ //the transition makes a pop in the stack
+                    _stack.pop(); 
+                    }
+            }
+            return avaiableT.fifth(); //return the states that goes the transition
+        }else{
+                return null; //if does not exist a valid transition, it is not possible go to a new state
+             }
+        }
+        
+    @Override
     public boolean accepts(String string) {
         assert string != null;
         assert verify_string(string);
         
         State actual = _initial;
+        System.out.println(_initial.toString());
         int i = 0;
         boolean res = true;
-        
+        _stack= new Stack(); 
+        _stack.add(Comodin); //reset the stack to the mark to know if string is valid for this automaton
         while (i < string.length() && res){
-            actual = (State) delta(actual, string.charAt(i));
+            actual =  delta(actual, string.charAt(i));
             if (actual != null){
                 i++;
             }else{
                 res= false;
             }
         }
-        res = res && _final_states.contains(actual);
-        return res;
+        res = res && _final_states.contains(actual);  
+        return res; 
     }
 
     public boolean rep_ok() {
@@ -114,10 +127,11 @@ public final class DFAPila extends AP {
             statesOK= _states.contains(s) && statesOK;
         }
         //Check that all transitions are correct. All states and characters should be part of the automaton set of states and alphabet.
+        //and all the transition have a valis Character of the Stack Alphabet
         for(Quintupla<State,Character,Character,String,State> t:_transitions){
-            transitionOK= _states.contains(t.first()) && _states.contains(t.fifth()) && _alphabet.contains(t.second()) && _stackAlphabet.contains(t.third()) && transitionOK;
+            transitionOK= _states.contains(t.first()) && _states.contains(t.fifth()) && _alphabet.contains(t.second()) && transitionOK;
             for (int i = 0; i<t.fourth().length(); i++ ){
-                transitionOK = transitionOK && ((_stackAlphabet.contains(t.fourth().charAt(i)) || (_stackAlphabet.contains(Lambda))));
+              transitionOK = transitionOK && ((_stackAlphabet.contains(t.fourth().charAt(i) )));
             }
             //Check that the transition relation is deterministic.
             for(Quintupla<State,Character,Character,String,State> l: _transitions){       
@@ -127,7 +141,6 @@ public final class DFAPila extends AP {
                 }
             }
         }
-        //Check that the transition relation is deterministic.
         System.out.println("Contain initial: "+ _states.contains(_initial));
         System.out.println("Contain lamda: "+ containLambda);
         System.out.println("nonDeterministic: "+ nonDeterministic);
