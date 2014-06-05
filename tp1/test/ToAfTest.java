@@ -1,14 +1,15 @@
-
 import automata.DFA;
 import automata.FA;
 import automata.State;
+
 import java.util.HashSet;
 import java.util.Set;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import utils.Triple;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
+import parser.ToAF;
+
+import utils.Triple;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -20,9 +21,7 @@ import utils.Triple;
  */
 
     public class ToAfTest {
-       
-        
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    
     @Test
     public void test1(){
         Set<State> states = new HashSet<State>();
@@ -31,7 +30,7 @@ import utils.Triple;
         State initial;
         Set<State> finals = new HashSet<State>();
         State s0 = new State("s0");
-	State s1 = new State("s1");
+ State s1 = new State("s1");
         states.add(s0);
         states.add(s1);
         alpha.add('a');
@@ -43,8 +42,8 @@ import utils.Triple;
         DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);
         
         String regularExp = "a*";
-        
-        assertTrue(ExpToAd(regularExp).areEquivalent(my_dfa));
+        System.out.println(ToAF.ExpToAF(regularExp).toString()+ "fasfasfasfasf --------------------------------");
+        assertTrue(ToAF.ExpToAF(regularExp).areEquivalent(my_dfa));
         
     }
     
@@ -68,10 +67,9 @@ import utils.Triple;
         finals.add(s1);
         finals.add(s0);        
         initial = s0;        
-        DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);
-        //assertTrue(my_dfa.rep_ok());        
+        DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);    
         String regularExp = "a*|b*";
-        assertTrue(ExpToAd(regularExp).areEquivalent(my_dfa));
+        assertTrue(ToAF.ExpToAF(regularExp).areEquivalent(my_dfa));
         
     }
     
@@ -99,17 +97,15 @@ import utils.Triple;
         
         initial = s0;
         
-        DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);
-        assertTrue(my_dfa.rep_ok());
-        
+        DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);        
         String regularExp = "a.(a)*.b.(b)*";
-        assertTrue(ExpToAd(regularExp).areEquivalent(my_dfa));
+        assertTrue(ToAF.ExpToAF(regularExp).areEquivalent(my_dfa));
         
     }
-    
+	@Test
         public void test4(){
             String regularExp= "a|b";
-            FA a= ExpToAd(regularExp);
+            FA a= ToAF.ExpToAF(regularExp);
             assertTrue(a.accepts("a"));
             assertTrue(a.accepts("b"));
             assertFalse(a.accepts("ab"));
