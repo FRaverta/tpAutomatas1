@@ -32,10 +32,11 @@ public class ToAF {
                 exp= exp+marca;
                 word=exp.toCharArray();
                 formula= new LinkedList();
+                i=0;
                 S();
                 FA a= ((NFALambda)createAutomaton());
-                File test= new File("/home/nando/Desktop/test.dot");
-                FileWriter w= new FileWriter("/home/nando/Desktop/test.dot");
+                File test= new File("test.dot");
+                FileWriter w= new FileWriter("test.dot");
                 if (a instanceof DFA){
                     w.write(a.to_dot());
                     w.close();
@@ -365,7 +366,7 @@ public class ToAF {
     
   
     public static void main(String[] args) {
-        FA a= ExpToAF("a.(a)*.b.(b)*");        
-        System.out.println(formula.toString());
+        FA a= ExpToAF("a*|b*");        
+      //  System.out.println(formula.toString());
     }    
 }
