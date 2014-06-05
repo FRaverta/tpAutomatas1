@@ -27,13 +27,25 @@ public class ToAF {
     private static List<Object> formula;
     
     //Method that return a finite authomaton for an expresion regular
-    public static FA ExpToAF(String exp){           
+    public static DFA ExpToAF(String exp){           
             try{
                 exp= exp+marca;
                 word=exp.toCharArray();
                 formula= new LinkedList();
-                S();             
-                 return ((NFALambda)createAutomaton()).toDFA();
+                S();
+                FA a= ((NFALambda)createAutomaton());
+                File test= new File("/home/nando/Desktop/test.dot");
+                FileWriter w= new FileWriter("/home/nando/Desktop/test.dot");
+                if (a instanceof DFA){
+                    w.write(a.to_dot());
+                    w.close();
+                    return (DFA) a;
+                }else{
+                    a= ((NFALambda)a).toDFA();
+                    w.write(a.to_dot());
+                    w.close();                    
+                    return ((DFA) a);
+                }
             }catch(Exception e){
                 System.out.println("NO ES UNA EXP REGULAR "+ e.toString());
                 return null;
@@ -351,9 +363,9 @@ public class ToAF {
         }
     }
     
-/*    
+  
     public static void main(String[] args) {
-        FA a= ExpToAF("(x|y)*");        
+        FA a= ExpToAF("a.(a)*.b.(b)*");        
         System.out.println(formula.toString());
-    }    */
+    }    
 }
