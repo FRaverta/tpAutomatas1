@@ -23,93 +23,73 @@ import utils.Triple;
     public class ToAfTest {
     
     @Test
-    public void test1(){
-        Set<State> states = new HashSet<State>();
-        Set<Character> alpha = new HashSet<Character>();
-        Set<Triple<State,Character,State>> transitions = new HashSet<Triple<State,Character,State>>();
-        State initial;
-        Set<State> finals = new HashSet<State>();
-        State s0 = new State("s0");
- State s1 = new State("s1");
-        states.add(s0);
-        states.add(s1);
-        alpha.add('a');
-        transitions.add(new Triple(s0,'a',s1));
-        transitions.add(new Triple(s1,'a',s1));
-        finals.add(s1);
-        finals.add(s0);
-        initial=s0;
-        DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);
-        
-        String regularExp = "a*";
-        System.out.println(ToAF.ExpToAF(regularExp).toString()+ "fasfasfasfasf --------------------------------");
-        assertTrue(ToAF.ExpToAF(regularExp).areEquivalent(my_dfa));
+    public void test1(){    
+        String regularExp = "a|b";
+        assertTrue(ToAF.ExpToAF(regularExp).accepts("a"));
+        assertTrue(ToAF.ExpToAF(regularExp).accepts("b"));
+       // assertTrue(ToAF.ExpToAF(regularExp).accepts("aaabba"));
+        //assertTrue(ToAF.ExpToAF(regularExp).accepts("aaabb"));
+       // assertTrue(ToAF.ExpToAF(regularExp).accepts("bbbb"));
+        assertFalse(ToAF.ExpToAF(regularExp).accepts("ab"));
+
         
     }
     
     @Test
     public void test2(){
-        Set<State> states = new HashSet<State>();
-        Set<Character> alpha = new HashSet<Character>();
-        Set<Triple<State,Character,State>> transitions = new HashSet<Triple<State,Character,State>>();
-        State initial;
-        Set<State> finals = new HashSet<State>();     
-        State s0 = new State("s0");
-        State s1 = new State("s1");
-        State s2 = new State("s2");        
-        alpha.add('a');
-        alpha.add('b');        
-        transitions.add(new Triple(s0,'a',s1));
-        transitions.add(new Triple(s0,'b',s2));
-        transitions.add(new Triple(s1,'a',s1));
-        transitions.add(new Triple(s2,'b',s2));        
-        finals.add(s2);
-        finals.add(s1);
-        finals.add(s0);        
-        initial = s0;        
-        DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);    
-        String regularExp = "a*|b*";
-        assertTrue(ToAF.ExpToAF(regularExp).areEquivalent(my_dfa));
-        
-    }
-    
-    @Test
-    public void test3(){
-        Set<State> states = new HashSet<State>();
-        Set<Character> alpha = new HashSet<Character>();
-        Set<Triple<State,Character,State>> transitions = new HashSet<Triple<State,Character,State>>();
-        State initial;
-        Set<State> finals = new HashSet<State>(); 
-        
-        State s0 = new State("s0");
-        State s1 = new State("s1");
-        State s2 = new State("s2");
-        
-        alpha.add('a');
-        alpha.add('b');
-        
-        transitions.add(new Triple(s0,'a',s1));
-        transitions.add(new Triple(s1,'a',s1));
-        transitions.add(new Triple(s1,'b',s2));
-        transitions.add(new Triple(s2,'b',s2));
-        
-        finals.add(s2);
-        
-        initial = s0;
-        
-        DFA my_dfa = new DFA(states,alpha,transitions,initial,finals);        
-        String regularExp = "a.(a)*.b.(b)*";
-        assertTrue(ToAF.ExpToAF(regularExp).areEquivalent(my_dfa));
+                String regularExp = "a*";
+        assertTrue(ToAF.ExpToAF(regularExp).accepts("aaaa"));
+        assertTrue(ToAF.ExpToAF(regularExp).accepts("a"));
         
     }
 	@Test
-        public void test4(){
-            String regularExp= "a|b";
+        public void test3(){
+            String regularExp= "(a|b)*";
             FA a= ToAF.ExpToAF(regularExp);
-            assertTrue(a.accepts("a"));
-            assertTrue(a.accepts("b"));
-            assertFalse(a.accepts("ab"));
+            assertTrue(a.accepts("aaaa"));
+            assertTrue(a.accepts("bbbbb"));
+            assertTrue(a.accepts(""));
+            assertTrue(a.accepts("abababababab"));
             
         }
-    
+        
+        	@Test
+        public void test4(){
+            String regularExp= "(a.b)";
+            FA a= ToAF.ExpToAF(regularExp);
+            assertTrue(a.accepts("ab"));
+            assertFalse(a.accepts("a"));
+            assertFalse(a.accepts("b"));
+            
+        }
+        
+                	@Test
+        public void test5(){
+            String regularExp= "(a.b*)";
+            FA a= ToAF.ExpToAF(regularExp);
+            assertTrue(a.accepts("abbbbbbbb"));
+            assertFalse(a.accepts("abbbbba"));
+            assertTrue(a.accepts("a"));
+            
+        }
+        
+                	@Test
+        public void test6(){
+            String regularExp= "(a.b)*";
+            FA a= ToAF.ExpToAF(regularExp);
+            assertTrue(a.accepts("abababab"));
+            assertTrue(a.accepts("ab"));
+            assertTrue(a.accepts(""));
+            assertFalse(a.accepts("aaaabbbb"));
+            
+        }
+                   	@Test
+        public void test7(){
+            String regularExp= "((a|b).c)";
+            FA a= ToAF.ExpToAF(regularExp);
+            assertTrue(a.accepts("ac"));
+            assertTrue(a.accepts("bc"));
+            assertFalse(a.accepts(""));
+        
+    }
     }
