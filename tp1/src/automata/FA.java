@@ -216,6 +216,9 @@ public abstract class FA {
         return _final_states;
     }
 
+    public Set<Triple<State,Character,State>> transitions(){
+        return _transitions; 
+    }
     /**
      * Query for the automaton's transition function.
      *
